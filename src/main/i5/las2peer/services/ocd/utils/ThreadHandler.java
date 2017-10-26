@@ -110,11 +110,11 @@ public class ThreadHandler {
 	}
 	
 	/**
-	 * Runs a simulation.
+	 * Runs a CentralitySimulation.
 	 * @param map The centrality map that is already persisted but not holding any valid information aside the graph and id.
-	 * @param simulation The simulation to calculate the centrality values with
+	 * @param simulation The CentralitySimulation to calculate the centrality values with
 	 */
-	public void runSimulation(CentralityMap map, CentralitySimulation simulation) {
+	public void runCentralitySimulation(CentralityMap map, CentralitySimulation simulation) {
 		CustomGraphId gId = new CustomGraphId(map.getGraph().getId(), map.getGraph().getUserName());
 		CentralityMapId mapId = new CentralityMapId(map.getId(), gId);
 		CentralitySimulationRunnable runnable = new CentralitySimulationRunnable(map, simulation, this);

@@ -1,14 +1,12 @@
 package i5.las2peer.services.ocd.centrality.simulations;
 
+import i5.las2peer.services.ocd.centrality.utils.CentralityAlgorithmException;
 import i5.las2peer.services.ocd.centrality.data.CentralityCreationLog;
 import i5.las2peer.services.ocd.centrality.data.CentralityCreationType;
-import i5.las2peer.services.ocd.centrality.utils.CentralityAlgorithmException;
 import i5.las2peer.services.ocd.centrality.data.CentralityMap;
 import i5.las2peer.services.ocd.graphs.CustomGraph;
 import i5.las2peer.services.ocd.graphs.GraphProcessor;
 import i5.las2peer.services.ocd.utils.ExecutionStatus;
-import y.base.Node;
-import y.base.NodeCursor;
 
 public class CentralitySimulationExecutor {
 	
@@ -20,25 +18,13 @@ public class CentralitySimulationExecutor {
 	 * @throws CentralityAlgorithmException In case of an algorithm failure.
 	 * @throws InterruptedException In case of an algorithm interrupt.
 	 */
-	public CentralityMap execute(CustomGraph graph, CentralitySimulation simulation) throws CentralityAlgorithmException, InterruptedException {
+	public CentralityMap execute(CustomGraph graph, CentralitySimulation simulation) throws InterruptedException {
 		CustomGraph graphCopy = new CustomGraph(graph);
 		GraphProcessor processor = new GraphProcessor();
 		processor.makeCompatible(graphCopy, simulation.compatibleGraphTypes());
 		long startTime = System.currentTimeMillis();
-		CentralityMap map = new CentralityMap(graphCopy);
-		map.setCreationMethod(new CentralityCreationLog(CentralitySimulationType.SIR, CentralityCreationType.SIMULATION, simulation.getParameters(), simulation.compatibleGraphTypes()));
-		NodeCursor nc = graphCopy.nodes();
-		while(nc.ok()) {
-			if(Thread.interrupted()) {
-				throw new InterruptedException();
-			}
-			Node currentNode = nc.node();
-			if(simulation.getSimulationType() == CentralitySimulationType.SIR) {
-				double d = ((SirSimulation) simulation).runSimulation(graphCopy, currentNode);
-				map.setNodeValue(currentNode, d);
-			}
-			nc.next();
-		}
+		CentralityMap map = simulation.getValues(graphCopy);
+		map.setCreationMethod(new CentralityCreationLog(simulation.getSimulationType(), CentralityCreationType.SIMULATION, simulation.getParameters(), simulation.compatibleGraphTypes()));
 		map.getCreationMethod().setStatus(ExecutionStatus.COMPLETED);
 		long executionTime = System.currentTimeMillis() - startTime;
 		map.getCreationMethod().setExecutionTime(executionTime);

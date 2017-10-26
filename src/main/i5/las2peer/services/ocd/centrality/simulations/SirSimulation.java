@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import i5.las2peer.services.ocd.centrality.data.CentralityCreationLog;
+import i5.las2peer.services.ocd.centrality.data.CentralityCreationType;
+import i5.las2peer.services.ocd.centrality.data.CentralityMap;
 import i5.las2peer.services.ocd.graphs.CustomGraph;
 import i5.las2peer.services.ocd.graphs.GraphType;
 import y.base.Node;
@@ -31,6 +34,23 @@ public class SirSimulation implements CentralitySimulation {
 	double infectionProbability = 0.25;
 	double recoveryProbability = 1.0;
 	
+	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
+		CentralityMap map = new CentralityMap(graph);
+		map.setCreationMethod(new CentralityCreationLog(CentralitySimulationType.SIR, CentralityCreationType.SIMULATION, this.getParameters(), this.compatibleGraphTypes()));
+		
+		NodeCursor nc = graph.nodes();
+		while(nc.ok()) {
+			if(Thread.interrupted()) {
+				throw new InterruptedException();
+			}
+			Node currentNode = nc.node();
+			double d = runSimulation(graph, currentNode);
+			map.setNodeValue(currentNode, d);
+			nc.next();
+		}
+		return map;
+	}
+	
 	/**
 	 * Runs the SIR-simulation on the graph starting with a single infected node
 	 * @param graph The graph on which the simulation is run
@@ -38,7 +58,7 @@ public class SirSimulation implements CentralitySimulation {
 	 * @return The spreading influence of the source node according to the SIR model
 	 * @throws InterruptedException
 	 */
-	public int runSimulation(CustomGraph graph, Node sourceNode) throws InterruptedException {
+	private int runSimulation(CustomGraph graph, Node sourceNode) throws InterruptedException {
 		infectedNodes = new HashSet<Node>();
 		recoveredNodes = new HashSet<Node>();
 		infectionMap = new HashMap<Node, InfectionState>();

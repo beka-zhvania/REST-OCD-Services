@@ -115,6 +115,8 @@ import io.swagger.annotations.Contact;
 import io.swagger.annotations.Info;
 import io.swagger.annotations.License;
 import io.swagger.annotations.SwaggerDefinition;
+import y.algo.GraphChecker;
+import y.base.Graph;
 
 /**
  * 
@@ -1490,6 +1492,11 @@ public class ServiceClass extends RESTService {
 				    		requestHandler.log(Level.WARNING, "user: " + username + ", " + "Invalid graph creation method status for centrality algorithm execution: " + graph.getCreationMethod().getStatus().name());
 							return requestHandler.writeError(Error.PARAMETER_INVALID, "Invalid graph creation method status for centrality algorithm execution: " + graph.getCreationMethod().getStatus().name());
 				    	}
+				    	if(algorithm.getCentralityMeasureType() == CentralityMeasureType.CURRENT_FLOW_BETWEENNESS || algorithm.getCentralityMeasureType() == CentralityMeasureType.CURRENT_FLOW_CLOSENESS) {
+							if(!GraphChecker.isConnected((Graph)graph)) {
+								return Response.serverError().entity("Show Error: This centrality measure can only be used on a connected network.").build();
+							}
+						}
 				    	map = new CentralityMap(graph);
 				    	map.setName(centralityMeasureType.getDisplayName());
 				    	log = new CentralityCreationLog(centralityMeasureType, CentralityCreationType.CENTRALITY_MEASURE, parametersCopy, algorithm.compatibleGraphTypes());
@@ -1504,6 +1511,7 @@ public class ServiceClass extends RESTService {
 						throw e;
 					}
 					em.close();
+
 			    	/*
 			    	 * Registers and starts algorithm
 			    	 */	
@@ -1725,7 +1733,7 @@ public class ServiceClass extends RESTService {
 			    	/*
 			    	 * Registers and starts algorithm
 			    	 */	
-					threadHandler.runSimulation(map, simulation);
+					threadHandler.runCentralitySimulation(map, simulation);
 		    	}
 		    	return Response.ok(requestHandler.writeId(map)).build();
 	    	}
@@ -1761,7 +1769,8 @@ public class ServiceClass extends RESTService {
 			notes = "Calculates the average centrality values from a list of centrality maps of the same graph.")
 	    public Response getAverageCentralityMap(
 	    		@PathParam("graphId") String graphIdStr, 
-	    		@QueryParam("mapIds") List<Integer> ids) {
+	    		@QueryParam("mapIds") List<Integer> ids,
+	    		@QueryParam("mapName") String averageMapName) {
 	    	try {
 	    		String username = ((UserAgent) Context.getCurrent().getMainAgent()).getLoginName();
 	        	long graphId;
@@ -1834,6 +1843,7 @@ public class ServiceClass extends RESTService {
 						tx.begin();
 						log = new CentralityCreationLog(CentralityMeasureType.UNDEFINED, CentralityCreationType.AVERAGE, parameters, new HashSet<GraphType>(Arrays.asList(GraphType.values())));
 						averageMap.setCreationMethod(log);
+						averageMap.setName(averageMapName);
 						em.persist(averageMap);
 						tx.commit();
 					}
