@@ -12,7 +12,12 @@ public enum CentralitySimulationType implements CentralityType {
 	/**
 	 * Type corresponding to the susceptible-infected-recovered simulation
 	 */
-	SIR("SIR Simulation", SirSimulation.class, 1);
+	SIR("SIR Simulation", SirSimulation.class, 1),
+	
+	/**
+	 * Type corresponding to a package simulation along shortest paths
+	 */
+	RANDOM_PACKAGE_TRANSMISSION("Random Package Transmission Simulation", RandomPackageTransmission.class, 2);
 	
 	/**
 	 * The class corresponding to the type

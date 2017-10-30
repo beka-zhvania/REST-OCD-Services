@@ -62,6 +62,7 @@ import i5.las2peer.services.ocd.centrality.data.CentralityCreationType;
 import i5.las2peer.services.ocd.centrality.data.CentralityMeasureType;
 import i5.las2peer.services.ocd.centrality.data.CentralityMap;
 import i5.las2peer.services.ocd.centrality.data.CentralityMapId;
+import i5.las2peer.services.ocd.centrality.evaluation.CorrelationCoefficient;
 import i5.las2peer.services.ocd.centrality.evaluation.StatisticalProcessor;
 import i5.las2peer.services.ocd.centrality.simulations.CentralitySimulation;
 import i5.las2peer.services.ocd.centrality.simulations.CentralitySimulationFactory;
@@ -1277,7 +1278,7 @@ public class ServiceClass extends RESTService {
 		}
 	    
 	    /**
-	     * Returns the ids (or meta information) of the calculated centrality maps.
+	     * Returns the ids (or meta information) of specific centrality maps.
 	     * 
 	     * @param firstIndexStr 
 	     *            Optional query parameter. The result list index of the first 
@@ -1492,7 +1493,8 @@ public class ServiceClass extends RESTService {
 				    		requestHandler.log(Level.WARNING, "user: " + username + ", " + "Invalid graph creation method status for centrality algorithm execution: " + graph.getCreationMethod().getStatus().name());
 							return requestHandler.writeError(Error.PARAMETER_INVALID, "Invalid graph creation method status for centrality algorithm execution: " + graph.getCreationMethod().getStatus().name());
 				    	}
-				    	if(algorithm.getCentralityMeasureType() == CentralityMeasureType.CURRENT_FLOW_BETWEENNESS || algorithm.getCentralityMeasureType() == CentralityMeasureType.CURRENT_FLOW_CLOSENESS) {
+				    	// Some centrality measures cannot be computed or do not give meaningful results on unconnected graphs
+				    	if(algorithm.getCentralityMeasureType() == CentralityMeasureType.CURRENT_FLOW_BETWEENNESS || algorithm.getCentralityMeasureType() == CentralityMeasureType.CURRENT_FLOW_CLOSENESS || algorithm.getCentralityMeasureType() == CentralityMeasureType.ECCENTRICITY || algorithm.getCentralityMeasureType() == CentralityMeasureType.CLOSENESS_CENTRALITY) {
 							if(!GraphChecker.isConnected((Graph)graph)) {
 								return Response.serverError().entity("Show Error: This centrality measure can only be used on a connected network.").build();
 							}
@@ -1716,6 +1718,11 @@ public class ServiceClass extends RESTService {
 				    		requestHandler.log(Level.WARNING, "user: " + username + ", " + "Invalid graph creation method status for simulation execution: " + graph.getCreationMethod().getStatus().name());
 							return requestHandler.writeError(Error.PARAMETER_INVALID, "Invalid graph creation method status for simulation execution: " + graph.getCreationMethod().getStatus().name());
 				    	}
+				    	if(simulation.getSimulationType() == CentralitySimulationType.RANDOM_PACKAGE_TRANSMISSION) {
+							if(!GraphChecker.isConnected((Graph)graph)) {
+								return Response.serverError().entity("Show Error: This simulation can only be used on a connected network.").build();
+							}
+						}
 				    	map = new CentralityMap(graph);
 				    	map.setName(simulationType.getDisplayName());
 				    	log = new CentralityCreationLog(simulationType, CentralityCreationType.SIMULATION, parametersCopy, simulation.compatibleGraphTypes());
@@ -1866,8 +1873,10 @@ public class ServiceClass extends RESTService {
 	    }
 	    
 	    /**
-	     * Calculates the Spearman correlation for each pair of centrality maps from 
-	     * the given list.
+	     * Calculates the correlation matrix by calculating the corresponding correlation
+	     * coefficient for each pair of centrality maps from the given list.
+	     * @param correlationCoefficientStr
+	     *            The correlation coefficient that is used.
 	     * @param graphIdStr 
 	     *            The id of the graph that the centrality maps are based on.
 	     * @param mapIds 
@@ -1875,7 +1884,7 @@ public class ServiceClass extends RESTService {
 	     * @return XML containing the correlation matrix.
 	     */
 	    @GET
-	    @Path("evaluation/correlation/spearman/graph/{graphId}/maps")
+	    @Path("evaluation/correlation/{coefficient}/graph/{graphId}/maps")
 	    @Produces(MediaType.TEXT_XML)
 	    @Consumes(MediaType.TEXT_PLAIN)
 	    @ApiResponses(value = {
@@ -1883,12 +1892,21 @@ public class ServiceClass extends RESTService {
 	    		@ApiResponse(code = 401, message = "Unauthorized")
 	    })
 		@ApiOperation(value = "",
-			notes = "Calculates the Spearman correlation from a list of centrality maps on the same graph.")
-	    public Response getSpearmanCorrelation(
+			notes = "Calculates a correlation matrix from a list of centrality maps on the same graph.")
+	    public Response getCorrelation(
+	    		@PathParam("coefficient") String correlationCoefficientStr,
 	    		@PathParam("graphId") String graphIdStr, 
 	    		@QueryParam("mapIds") List<Integer> mapIds) {
 	    	try {
 	    		String username = ((UserAgent) Context.getCurrent().getMainAgent()).getLoginName();
+	    		CorrelationCoefficient correlationCoefficient;
+	    		try {
+		    		correlationCoefficient = CorrelationCoefficient.valueOf(correlationCoefficientStr);
+	    		}
+		    	catch (Exception e) {
+		    		requestHandler.log(Level.WARNING, "user: " + username, e);
+					return requestHandler.writeError(Error.PARAMETER_INVALID, "Specified correlation coefficient does not exist.");
+		    	}
 	        	long graphId;
 	        	try {
 	    			graphId = Long.parseLong(graphIdStr);
@@ -1948,7 +1966,7 @@ public class ServiceClass extends RESTService {
 	    	    	}
 	    	    	maps.add(map);
 	        	}
-		    	RealMatrix correlationMatrix = StatisticalProcessor.spearmanCorrelation(graph, maps);    	        	
+		    	RealMatrix correlationMatrix = StatisticalProcessor.getCorrelation(graph, maps, correlationCoefficient);    	        	
 	        	return Response.ok(requestHandler.writeCorrelationMatrix(mapIds, correlationMatrix)).build();
 	    	}
 	    	catch (Exception e) {

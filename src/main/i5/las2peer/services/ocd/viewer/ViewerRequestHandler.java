@@ -12,7 +12,7 @@ import i5.las2peer.services.ocd.adapters.visualOutput.VisualOutputFormat;
 import i5.las2peer.services.ocd.centrality.data.CentralityMap;
 import i5.las2peer.services.ocd.graphs.Cover;
 import i5.las2peer.services.ocd.graphs.CustomGraph;
-import i5.las2peer.services.ocd.utils.OcdRequestHandler;
+import i5.las2peer.services.ocd.utils.RequestHandler;
 
 
 /**
@@ -21,7 +21,7 @@ import i5.las2peer.services.ocd.utils.OcdRequestHandler;
  * @author Sebastian
  *
  */
-public class ViewerRequestHandler extends OcdRequestHandler {
+public class ViewerRequestHandler extends RequestHandler {
 	
 	/**
 	 * The factory used for creating visual output adapters.

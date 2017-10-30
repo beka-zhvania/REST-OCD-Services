@@ -1,4 +1,4 @@
-package i5.las2peer.services.ocd.centrality.simulations;
+package i5.las2peer.services.ocd.utils;
 
 import java.util.logging.Level;
 
@@ -7,11 +7,9 @@ import javax.persistence.EntityTransaction;
 
 import i5.las2peer.services.ocd.centrality.data.CentralityMap;
 import i5.las2peer.services.ocd.centrality.data.CentralityMapId;
+import i5.las2peer.services.ocd.centrality.simulations.CentralitySimulation;
+import i5.las2peer.services.ocd.centrality.simulations.CentralitySimulationExecutor;
 import i5.las2peer.services.ocd.graphs.CustomGraphId;
-import i5.las2peer.services.ocd.utils.EntityHandler;
-import i5.las2peer.services.ocd.utils.ExecutionStatus;
-import i5.las2peer.services.ocd.utils.RequestHandler;
-import i5.las2peer.services.ocd.utils.ThreadHandler;
 
 public class CentralitySimulationRunnable implements Runnable {
 	

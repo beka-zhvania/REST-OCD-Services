@@ -20,9 +20,14 @@ import i5.las2peer.services.ocd.adapters.graphOutput.GraphOutputAdapter;
 import i5.las2peer.services.ocd.adapters.graphOutput.GraphOutputAdapterFactory;
 import i5.las2peer.services.ocd.adapters.graphOutput.GraphOutputFormat;
 import i5.las2peer.services.ocd.centrality.data.CentralityMap;
+import i5.las2peer.services.ocd.centrality.data.CentralityMeasureType;
+import i5.las2peer.services.ocd.centrality.simulations.CentralitySimulationType;
 import i5.las2peer.services.ocd.graphs.Cover;
+import i5.las2peer.services.ocd.graphs.CoverCreationType;
 import i5.las2peer.services.ocd.graphs.CustomGraph;
+import i5.las2peer.services.ocd.graphs.GraphCreationType;
 import i5.las2peer.services.ocd.metrics.OcdMetricLog;
+import i5.las2peer.services.ocd.metrics.OcdMetricType;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -452,7 +457,7 @@ public class RequestHandler {
 
 	/**
 	 * Creates a CentralityMap output.
-	 * @param cover The cover.
+	 * @param map The CentralityMap.
 	 * @return The CentralityMap output.
 	 * @throws AdapterException
 	 * @throws InstantiationException
@@ -465,6 +470,116 @@ public class RequestHandler {
     	adapter.setWriter(writer);
 		adapter.writeCentralityMap(map);
 		return writer.toString();
+	}
+	
+	/**
+	 * Creates an XML document containing all statistical measure names.
+	 * @return The document.
+	 * @throws ParserConfigurationException
+	 */
+	public String writeStatisticalMeasureNames() throws ParserConfigurationException {
+		Document doc = getDocument();
+		Element namesElt = doc.createElement("Names");
+		for(OcdMetricType e : OcdMetricType.class.getEnumConstants()) {
+			if(e.correspondsStatisticalMeasure()) {
+				Element nameElt = doc.createElement("Name");
+				nameElt.appendChild(doc.createTextNode(e.name()));
+				namesElt.appendChild(nameElt);
+			}
+		}
+		doc.appendChild(namesElt);
+		return writeDoc(doc);
+	}
+	
+	/**
+	 * Creates an XML document containing all knowledge-driven measure names.
+	 * @return The document.
+	 * @throws ParserConfigurationException
+	 */
+	public String writeKnowledgeDrivenMeasureNames() throws ParserConfigurationException {
+		Document doc = getDocument();
+		Element namesElt = doc.createElement("Names");
+		for(OcdMetricType e : OcdMetricType.class.getEnumConstants()) {
+			if(e.correspondsKnowledgeDrivenMeasure()) {
+				Element nameElt = doc.createElement("Name");
+				nameElt.appendChild(doc.createTextNode(e.name()));
+				namesElt.appendChild(nameElt);
+			}
+		}
+		doc.appendChild(namesElt);
+		return writeDoc(doc);
+	}
+	
+	/**
+	 * Creates an XML document containing all ground truth benchmark names.
+	 * @return The document.
+	 * @throws ParserConfigurationException
+	 */
+	public String writeGroundTruthBenchmarkNames() throws ParserConfigurationException {
+		Document doc = getDocument();
+		Element namesElt = doc.createElement("Names");
+		for(GraphCreationType e : GraphCreationType.class.getEnumConstants()) {
+			if(e.correspondsGroundTruthBenchmark()) {
+				Element nameElt = doc.createElement("Name");
+				nameElt.appendChild(doc.createTextNode(e.name()));
+				namesElt.appendChild(nameElt);
+			}
+		}
+		doc.appendChild(namesElt);
+		return writeDoc(doc);
+	}
+	
+	/**
+	 * Creates an XML document containing all ocd algorithm names.
+	 * @return The document.
+	 * @throws ParserConfigurationException
+	 */
+	public String writeAlgorithmNames() throws ParserConfigurationException {
+		Document doc = getDocument();
+		Element namesElt = doc.createElement("Names");
+		for(CoverCreationType e : CoverCreationType.class.getEnumConstants()) {
+			if(e.correspondsAlgorithm()) {
+				Element nameElt = doc.createElement("Name");
+				nameElt.appendChild(doc.createTextNode(e.name()));
+				namesElt.appendChild(nameElt);
+			}
+		}
+		doc.appendChild(namesElt);
+		return writeDoc(doc);
+	}
+	
+	/**
+	 * Creates an XML document containing all centrality measure names.
+	 * @return The document.
+	 * @throws ParserConfigurationException
+	 */
+	public String writeCentralityMeasureNames() throws ParserConfigurationException {
+		Document doc = getDocument();
+		Element namesElt = doc.createElement("Names");
+		for(CentralityMeasureType e : CentralityMeasureType.class.getEnumConstants()) {
+			Element nameElt = doc.createElement("Name");
+			nameElt.appendChild(doc.createTextNode(e.getDisplayName()));
+			namesElt.appendChild(nameElt);
+		}
+		doc.appendChild(namesElt);
+		return writeDoc(doc);
+	}
+	
+	/**
+	 * Creates an XML document containing all CentralitySimulation names.
+	 * @return The document.
+	 * @throws ParserConfigurationException
+	 */
+	public String writeCentralitySimulationNames() throws ParserConfigurationException {
+		Document doc = getDocument();
+		Element namesElt = doc.createElement("Names");
+		for(CentralitySimulationType e : CentralitySimulationType.class.getEnumConstants()) {
+			Element nameElt = doc.createElement("Name");
+			nameElt.appendChild(doc.createTextNode(e.getDisplayName()));
+			namesElt.appendChild(nameElt);
+		}
+		doc.appendChild(namesElt);
+		return writeDoc(doc);
 	}
 	
 	/**

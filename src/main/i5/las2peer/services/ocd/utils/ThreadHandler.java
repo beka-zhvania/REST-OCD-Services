@@ -6,7 +6,6 @@ import i5.las2peer.services.ocd.centrality.data.CentralityCreationLog;
 import i5.las2peer.services.ocd.centrality.data.CentralityMap;
 import i5.las2peer.services.ocd.centrality.data.CentralityMapId;
 import i5.las2peer.services.ocd.centrality.simulations.CentralitySimulation;
-import i5.las2peer.services.ocd.centrality.simulations.CentralitySimulationRunnable;
 import i5.las2peer.services.ocd.centrality.utils.CentralityAlgorithm;
 import i5.las2peer.services.ocd.graphs.Cover;
 import i5.las2peer.services.ocd.graphs.CoverCreationLog;
