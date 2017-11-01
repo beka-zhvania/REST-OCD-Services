@@ -15,9 +15,10 @@ import y.base.EdgeCursor;
 import y.base.Node;
 
 /**
- * In this simulation each node sends a package to each other node in the graph. The package travels through the network by
- * randomly traversing edges until it reaches the target node. The probability of an edge being selected is proportional to 
- * its edge weight. The centrality values are determined by counting the number of times a package passes a node.
+ * In this simulation each node sends a package to each node in the graph (including itself). 
+ * The package travels through the network by randomly traversing edges until it reaches the target node. 
+ * The probability of an edge being selected is proportional to its edge weight. 
+ * The centrality values are determined by counting the number of times a package passes a node.
  * @author Tobias
  *
  */
@@ -31,10 +32,10 @@ public class RandomPackageTransmission implements CentralitySimulation {
 		Node[] nodes = graph.getNodeArray();
 		double[] passageCounter = new double[graph.nodeCount()];
 		int sPos = 0;
-		int tPos = 1;
+		int tPos = 0;
 		
-		while(sPos < nodes.length-1) {
-			tPos = sPos + 1;
+		while(sPos < nodes.length) {
+			tPos = 0;
 			while(tPos < nodes.length) {
 				// Send package from s to t
 				int packagePosition = sPos;
@@ -70,7 +71,7 @@ public class RandomPackageTransmission implements CentralitySimulation {
 					Edge nextEdge = incidentEdges[randomEdgeIndex];
 					packagePosition = nextEdge.target().index();
 					passageCounter[nextEdge.target().index()]++;
-				}
+				}	
 				// Change the position of t
 				tPos++;
 			}
