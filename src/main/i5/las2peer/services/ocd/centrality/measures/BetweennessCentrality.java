@@ -25,11 +25,11 @@ public class BetweennessCentrality implements CentralityAlgorithm {
 		if(graph.getTypes().contains(GraphType.WEIGHTED)) {
 			return getValuesWeighted(graph);
 		}
-		
-		NodeCursor nc = graph.nodes();
+
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.BETWEENNESS_CENTRALITY, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
+		NodeCursor nc = graph.nodes();
 		while(nc.ok()) {
 			res.setNodeValue(nc.node(), 0);
 			nc.next();
@@ -68,8 +68,7 @@ public class BetweennessCentrality implements CentralityAlgorithm {
 			// Calculate single-source shortest-paths
 			while(!Q.isEmpty()) {
 				Node v = Q.poll();
-				S.push(v);
-				
+				S.push(v);	
 				NodeCursor outNeighbors = v.successors();
 				while(outNeighbors.ok()) {
 					Node w = outNeighbors.node();
@@ -107,7 +106,6 @@ public class BetweennessCentrality implements CentralityAlgorithm {
 					res.setNodeValue(w, res.getNodeValue(w) + delta.get(w));
 				}
 			}
-
 			nc.next();
 		}
 		
@@ -119,15 +117,14 @@ public class BetweennessCentrality implements CentralityAlgorithm {
 				nc.next();
 			}
 		}
-		
 		return res;
 	}
 	
 	private CentralityMap getValuesWeighted(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.BETWEENNESS_CENTRALITY, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
+		NodeCursor nc = graph.nodes();
 		while(nc.ok()) {
 			res.setNodeValue(nc.node(), 0);
 			nc.next();
@@ -191,8 +188,7 @@ public class BetweennessCentrality implements CentralityAlgorithm {
 					if(dist.get(w) == dist.get(v) + graph.getEdgeWeight(outEdges.edge())) {
 						sigma.put(w, sigma.get(w) + sigma.get(v));
 						Pred.get(w).add(v);
-					}
-					
+					}				
 					outEdges.next();
 				}
 			}
@@ -214,7 +210,6 @@ public class BetweennessCentrality implements CentralityAlgorithm {
 					res.setNodeValue(w, res.getNodeValue(w) + delta.get(w));
 				}
 			}
-
 			nc.next();
 		}
 		
@@ -225,8 +220,7 @@ public class BetweennessCentrality implements CentralityAlgorithm {
 				res.setNodeValue(nc.node(), res.getNodeValue(nc.node())/2);
 				nc.next();
 			}
-		}
-		
+		}	
 		return res;
 	}
 

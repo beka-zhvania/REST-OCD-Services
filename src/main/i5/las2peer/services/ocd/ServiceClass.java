@@ -1718,7 +1718,7 @@ public class ServiceClass extends RESTService {
 				    		requestHandler.log(Level.WARNING, "user: " + username + ", " + "Invalid graph creation method status for simulation execution: " + graph.getCreationMethod().getStatus().name());
 							return requestHandler.writeError(Error.PARAMETER_INVALID, "Invalid graph creation method status for simulation execution: " + graph.getCreationMethod().getStatus().name());
 				    	}
-				    	if(simulation.getSimulationType() == CentralitySimulationType.RANDOM_PACKAGE_TRANSMISSION) {
+				    	if(simulation.getSimulationType() == CentralitySimulationType.RANDOM_PACKAGE_TRANSMISSION_UNWEIGHTED) {
 							if(!GraphChecker.isConnected((Graph)graph)) {
 								return Response.serverError().entity("Show Error: This simulation can only be used on a connected network.").build();
 							}

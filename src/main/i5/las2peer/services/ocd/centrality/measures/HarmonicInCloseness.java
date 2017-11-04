@@ -12,24 +12,14 @@ import i5.las2peer.services.ocd.centrality.utils.CentralityAlgorithm;
 import i5.las2peer.services.ocd.centrality.data.CentralityMap;
 import i5.las2peer.services.ocd.graphs.CustomGraph;
 import i5.las2peer.services.ocd.graphs.GraphType;
-import y.base.Node;
-import y.base.NodeCursor;
 
-public class OutDegree implements CentralityAlgorithm {
+public class HarmonicInCloseness implements CentralityAlgorithm {
 	
-	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		CentralityMap res = new CentralityMap(graph);
-		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.OUT_DEGREE, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
-		
-		NodeCursor nc = graph.nodes();
-		while(nc.ok()) {
-			if(Thread.interrupted()) {
-				throw new InterruptedException();
-			}
-			Node node = nc.node();
-			res.setNodeValue(node, graph.getWeightedOutDegree(node));
-			nc.next();
-		}
+	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {	
+		// The edge directions were reversed in the CentralityAlgorithmExecutor
+		HarmonicCentrality harmonicCentralityAlgorithm = new HarmonicCentrality();
+		CentralityMap res = harmonicCentralityAlgorithm.getValues(graph);	
+		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.HARMONIC_IN_CLOSENESS, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));	
 		return res;
 	}
 
@@ -43,7 +33,7 @@ public class OutDegree implements CentralityAlgorithm {
 
 	@Override
 	public CentralityMeasureType getCentralityMeasureType() {
-		return CentralityMeasureType.OUT_DEGREE;
+		return CentralityMeasureType.HARMONIC_IN_CLOSENESS;
 	}
 	
 	@Override

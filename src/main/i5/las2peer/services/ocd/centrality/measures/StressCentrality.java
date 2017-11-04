@@ -25,11 +25,10 @@ public class StressCentrality implements CentralityAlgorithm {
 		if(graph.getTypes().contains(GraphType.WEIGHTED)) {
 			return getValuesWeighted(graph);
 		}
-		
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.STRESS_CENTRALITY, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
+		NodeCursor nc = graph.nodes();
 		while(nc.ok()) {
 			res.setNodeValue(nc.node(), 0);
 			nc.next();
@@ -107,7 +106,6 @@ public class StressCentrality implements CentralityAlgorithm {
 					res.setNodeValue(w, res.getNodeValue(w) + delta.get(w));
 				}
 			}
-
 			nc.next();
 		}
 		
@@ -118,16 +116,15 @@ public class StressCentrality implements CentralityAlgorithm {
 				res.setNodeValue(nc.node(), res.getNodeValue(nc.node())/2);
 				nc.next();
 			}
-		}
-		
+		}	
 		return res;
 	}
 	
 	private CentralityMap getValuesWeighted(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.STRESS_CENTRALITY, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
+		NodeCursor nc = graph.nodes();
 		while(nc.ok()) {
 			res.setNodeValue(nc.node(), 0);
 			nc.next();

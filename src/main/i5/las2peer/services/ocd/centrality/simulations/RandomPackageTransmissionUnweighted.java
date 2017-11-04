@@ -17,17 +17,16 @@ import y.base.Node;
 /**
  * In this simulation each node sends a package to each node in the graph (including itself). 
  * The package travels through the network by randomly traversing edges until it reaches the target node. 
- * The probability of an edge being selected is proportional to its edge weight. 
  * The centrality values are determined by counting the number of times a package passes a node.
  * @author Tobias
  *
  */
-public class RandomPackageTransmission implements CentralitySimulation {
+public class RandomPackageTransmissionUnweighted implements CentralitySimulation {
 
 	@Override
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
 		CentralityMap map = new CentralityMap(graph);
-		map.setCreationMethod(new CentralityCreationLog(CentralitySimulationType.RANDOM_PACKAGE_TRANSMISSION, CentralityCreationType.SIMULATION, this.getParameters(), this.compatibleGraphTypes()));
+		map.setCreationMethod(new CentralityCreationLog(CentralitySimulationType.RANDOM_PACKAGE_TRANSMISSION_UNWEIGHTED, CentralityCreationType.SIMULATION, this.getParameters(), this.compatibleGraphTypes()));
 		
 		Node[] nodes = graph.getNodeArray();
 		double[] passageCounter = new double[graph.nodeCount()];
@@ -44,25 +43,22 @@ public class RandomPackageTransmission implements CentralitySimulation {
 						throw new InterruptedException();
 					}
 					Node currentNode = nodes[packagePosition];
-					// Determine incident edges and edge weights
+					// Determine incident edges
 					Edge[] incidentEdges = new Edge[currentNode.outDegree()];
-					double[] incidentEdgesWeights = new double[currentNode.outDegree()];
-					double currentDegree = 0;
+					double currentDegree = currentNode.outDegree();
 					EdgeCursor ec = currentNode.outEdges();
 					int i = 0;
 					while(ec.ok()) {
 						Edge edge = ec.edge();
 						incidentEdges[i] = edge;
-						incidentEdgesWeights[i] = graph.getEdgeWeight(edge);
-						currentDegree += incidentEdgesWeights[i];
 						i++;
 						ec.next();
 					}
-					// Choose one of the edges using probabilities proportional to the edge weight
+					// Choose one of the edges at random
 					int randomEdgeIndex = -1;
 					double random = Math.random() * currentDegree;
 					for(int j = 0; j < incidentEdges.length; j++) {
-						random -= incidentEdgesWeights[j];
+						random--;
 						if(random <= 0) {
 							randomEdgeIndex = j;
 							break;
@@ -87,7 +83,7 @@ public class RandomPackageTransmission implements CentralitySimulation {
 
 	@Override
 	public CentralitySimulationType getSimulationType() {
-		return CentralitySimulationType.RANDOM_PACKAGE_TRANSMISSION;
+		return CentralitySimulationType.RANDOM_PACKAGE_TRANSMISSION_UNWEIGHTED;
 	}
 
 	@Override

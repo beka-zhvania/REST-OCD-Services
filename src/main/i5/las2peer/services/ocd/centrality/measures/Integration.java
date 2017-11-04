@@ -19,10 +19,10 @@ import y.base.NodeCursor;
 public class Integration implements CentralityAlgorithm {
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.INTEGRATION, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
+		NodeCursor nc = graph.nodes();
 		// If there is only a single node
 		if(graph.nodeCount() == 1) {
 			res.setNodeValue(nc.node(), 0);

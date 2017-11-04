@@ -20,11 +20,11 @@ import y.base.NodeCursor;
 public class LeaderRank implements CentralityAlgorithm {
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
-		int n = nc.size();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.LEADERRANK, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
+		NodeCursor nc = graph.nodes();
+		int n = graph.nodeCount();
 		// Set initial LeaderRank of all nodes to 1
 		while(nc.ok()) {
 			res.setNodeValue(nc.node(), 1.0);

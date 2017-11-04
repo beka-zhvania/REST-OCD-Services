@@ -19,11 +19,10 @@ import y.algo.ShortestPaths;
 public class ClosenessCentrality implements CentralityAlgorithm {
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
-		
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.CLOSENESS_CENTRALITY, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
+		NodeCursor nc = graph.nodes();
 		// If there is only a single node
 		if(graph.nodeCount() == 1) {
 			res.setNodeValue(nc.node(), 0);

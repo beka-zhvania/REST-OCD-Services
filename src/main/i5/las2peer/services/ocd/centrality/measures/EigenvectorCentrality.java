@@ -8,11 +8,11 @@ import java.util.Set;
 import org.la4j.matrix.Matrix;
 import org.la4j.vector.Vector;
 
-import i5.las2peer.services.ocd.algorithms.utils.MatrixOperations;
 import i5.las2peer.services.ocd.centrality.data.CentralityCreationLog;
 import i5.las2peer.services.ocd.centrality.data.CentralityCreationType;
 import i5.las2peer.services.ocd.centrality.data.CentralityMeasureType;
 import i5.las2peer.services.ocd.centrality.utils.CentralityAlgorithm;
+import i5.las2peer.services.ocd.centrality.utils.MatrixOperations;
 import i5.las2peer.services.ocd.centrality.data.CentralityMap;
 import i5.las2peer.services.ocd.graphs.CustomGraph;
 import i5.las2peer.services.ocd.graphs.GraphType;
@@ -22,10 +22,10 @@ import y.base.NodeCursor;
 public class EigenvectorCentrality implements CentralityAlgorithm {
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.EIGENVECTOR_CENTRALITY, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
+		NodeCursor nc = graph.nodes();
 		// If the graph contains no edges
 		if(graph.edgeCount() == 0) {
 			while(nc.ok()) {

@@ -15,9 +15,14 @@ public enum CentralitySimulationType implements CentralityType {
 	SIR("SIR Simulation", SirSimulation.class, 1),
 	
 	/**
-	 * Type corresponding to a package simulation along shortest paths
+	 * Type corresponding to a package simulation that does not take into account edge weights
 	 */
-	RANDOM_PACKAGE_TRANSMISSION("Random Package Transmission Simulation", RandomPackageTransmission.class, 2);
+	RANDOM_PACKAGE_TRANSMISSION_UNWEIGHTED("Random Package Transmission Simulation (Unweighted)", RandomPackageTransmissionUnweighted.class, 2),
+	
+	/**
+	 * Type corresponding to a package simulation that does take into account edge weights
+	 */
+	RANDOM_PACKAGE_TRANSMISSION_WEIGHTED("Random Package Transmission Simulation (Weighted)", RandomPackageTransmissionWeighted.class, 3);
 	
 	/**
 	 * The class corresponding to the type

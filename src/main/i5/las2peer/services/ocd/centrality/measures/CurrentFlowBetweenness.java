@@ -25,10 +25,10 @@ import y.base.NodeCursor;
 public class CurrentFlowBetweenness implements CentralityAlgorithm {
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.CURRENT_FLOW_BETWEENNESS, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
+		NodeCursor nc = graph.nodes();
 		// If the graph contains no edges
 		if(graph.edgeCount() == 0) {
 			while(nc.ok()) {
@@ -113,9 +113,7 @@ public class CurrentFlowBetweenness implements CentralityAlgorithm {
 			ec.next();
 			edgeIndex++;
 		}
-		
 		Matrix F = B.multiply(C);
-		
 		int normalizationFactor = (n-2)*(n-1);
 		Node[] nodeArray = graph.getNodeArray();
 		nc.toFirst();
@@ -126,14 +124,12 @@ public class CurrentFlowBetweenness implements CentralityAlgorithm {
 				throw new InterruptedException();
 			}
 			Node node = nc.node();	
-			double throughputSum = 0.0;	
-			
+			double throughputSum = 0.0;		
 			for(int sourceIndex = 0; sourceIndex < n; sourceIndex++) {
 				for(int targetIndex = sourceIndex+1; targetIndex < n; targetIndex++) {
 					if(sourceIndex != node.index() && targetIndex != node.index()) {
 						Node s = nodeArray[sourceIndex];
-						Node t = nodeArray[targetIndex];
-						
+						Node t = nodeArray[targetIndex];		
 						ec.toFirst();
 						edgeIndex = 0;
 						while(ec.ok()) {
@@ -147,7 +143,6 @@ public class CurrentFlowBetweenness implements CentralityAlgorithm {
 					}
 				}
 			}
-
 			res.setNodeValue(node, 1.0/normalizationFactor * throughputSum/2);
 			nc.next();
 		}

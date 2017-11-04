@@ -9,11 +9,11 @@ import org.la4j.matrix.Matrix;
 import org.la4j.matrix.sparse.CCSMatrix;
 import org.la4j.vector.Vector;
 
-import i5.las2peer.services.ocd.algorithms.utils.MatrixOperations;
 import i5.las2peer.services.ocd.centrality.data.CentralityCreationLog;
 import i5.las2peer.services.ocd.centrality.data.CentralityCreationType;
 import i5.las2peer.services.ocd.centrality.data.CentralityMeasureType;
 import i5.las2peer.services.ocd.centrality.utils.CentralityAlgorithm;
+import i5.las2peer.services.ocd.centrality.utils.MatrixOperations;
 import i5.las2peer.services.ocd.centrality.data.CentralityMap;
 import i5.las2peer.services.ocd.graphs.CustomGraph;
 import i5.las2peer.services.ocd.graphs.GraphType;
@@ -26,8 +26,8 @@ public class SalsaHubScore implements CentralityAlgorithm {
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.SALSA_HUB_SCORE, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
-		int n = graph.nodeCount();
 		
+		int n = graph.nodeCount();
 		// If the graph contains no edges
 		if(graph.edgeCount() == 0) {
 			NodeCursor nc = graph.nodes();
@@ -89,13 +89,11 @@ public class SalsaHubScore implements CentralityAlgorithm {
 				NodeCursor stepTwo = ka.predecessors();
 				while(stepTwo.ok()) {
 					Node jh = stepTwo.node();
-					Node j = reverseHubNodeMap.get(jh);
-					
+					Node j = reverseHubNodeMap.get(jh);			
 					double edgeWeightIK = bipartiteGraph.getEdgeWeight(ih.getEdgeTo(ka));
 					double edgeWeightJK = bipartiteGraph.getEdgeWeight(jh.getEdgeTo(ka));
 					double weightedOutDegreeI = bipartiteGraph.getWeightedOutDegree(ih);
-					double weightedInDegreeK = bipartiteGraph.getWeightedInDegree(ka);
-					
+					double weightedInDegreeK = bipartiteGraph.getWeightedInDegree(ka);		
 					double oldHij = hubMatrix.get(i.index(), j.index());
 					double newHij = oldHij + (double)edgeWeightIK/weightedOutDegreeI * (double)edgeWeightJK/weightedInDegreeK;
 					hubMatrix.set(i.index(), j.index(), newHij);
@@ -103,8 +101,7 @@ public class SalsaHubScore implements CentralityAlgorithm {
 				}	
 				stepOne.next();
 			}
-		}
-		
+		}	
 		// Calculate stationary distribution of hub Markov chain
 		Vector hubVector = MatrixOperations.calculateStationaryDistribution(hubMatrix);
 		

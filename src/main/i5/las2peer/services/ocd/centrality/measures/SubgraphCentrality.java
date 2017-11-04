@@ -22,17 +22,16 @@ public class SubgraphCentrality implements CentralityAlgorithm {
 	private static final int ITERATIONS = 20;
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.SUBGRAPH_CENTRALITY, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
-		Matrix A = graph.getNeighbourhoodMatrix();
-		
+		NodeCursor nc = graph.nodes();
 		while(nc.ok()) {
 			res.setNodeValue(nc.node(), 0);
 			nc.next();
 		}
 		
+		Matrix A = graph.getNeighbourhoodMatrix();
 		for(int p = 1; p <= ITERATIONS; p++) {
 			if(Thread.interrupted()) {
 				throw new InterruptedException();

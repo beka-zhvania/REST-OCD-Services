@@ -18,10 +18,10 @@ import y.base.NodeCursor;
 public class LaplacianCentrality implements CentralityAlgorithm {
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.LAPLACIAN_CENTRALITY, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
+		NodeCursor nc = graph.nodes();
 		while(nc.ok()) {
 			if(Thread.interrupted()) {
 				throw new InterruptedException();

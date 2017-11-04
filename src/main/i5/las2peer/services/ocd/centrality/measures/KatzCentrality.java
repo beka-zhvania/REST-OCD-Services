@@ -29,47 +29,12 @@ public class KatzCentrality implements CentralityAlgorithm {
 	 */
 	protected static final String ALPHA_NAME = "Alpha";
 	
-	/*private static final double EPSILON = 0.0000000000000000000000000000000000000000000000001;
-	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
-		CentralityMap res = new CentralityMap(graph);
-		res.setCreationMethod(new CentralityCreationLog(CentralityCreationType.KATZ_CENTRALITY, this.getParameters(), this.compatibleGraphTypes()));
-		
-		int n = graph.nodeCount();
-		Matrix A = graph.getNeighbourhoodMatrix();
-
-		double a = 0.2;
-		
-		while(nc.ok()) {
-			if(Thread.interrupted()) {
-				throw new InterruptedException();
-			}
-			Node node = nc.node();	
-			
-			int i = node.index();
-			int k = 1;
-			double katzScore = 0.0;
-			while(Math.pow(a, k) > EPSILON) {
-				for(int j = 0; j < n; j++) {
-					katzScore += Math.pow(a, k) * A.power(k).get(j, i);
-				}
-				k++;
-			}
-			
-			res.setNodeValue(node, katzScore);
-			nc.next();
-		}
-		return res;
-	}*/
-	
-	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.KATZ_CENTRALITY, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
-		
+
 		int n = graph.nodeCount();
-		Matrix A = graph.getNeighbourhoodMatrix();
+		Matrix A_tr = graph.getNeighbourhoodMatrix().transpose();
 		
 		// Create identity matrix and vector consisting of only ones
 		Matrix I = new CCSMatrix(n, n);
@@ -79,12 +44,12 @@ public class KatzCentrality implements CentralityAlgorithm {
 			ones.set(i, 1.0);
 		}
 		
-		Matrix toInvert = I.subtract(A.multiply(alpha));
+		Matrix toInvert = I.subtract(A_tr.multiply(alpha));
 		MatrixInverter gauss = new GaussJordanInverter(toInvert);
 		Matrix inverse = gauss.inverse();
-		
 		Vector resultVector = inverse.multiply(ones);
 		
+		NodeCursor nc = graph.nodes();
 		while(nc.ok()) {
 			if(Thread.interrupted()) {
 				throw new InterruptedException();

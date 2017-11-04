@@ -24,12 +24,10 @@ import y.util.Maps;
 public class FlowBetweenness implements CentralityAlgorithm {
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.FLOW_BETWEENNESS, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
 		Node[] nodeArray = graph.getNodeArray();
-		
 		// The flow capacities are given by the edge weights, only integers are supported
 		double[] weights = graph.getEdgeWeights();
 		int[] intWeights = new int[weights.length];
@@ -38,14 +36,13 @@ public class FlowBetweenness implements CentralityAlgorithm {
 		}
 		DataProvider capacities = Maps.createIndexEdgeMap(intWeights);
 		
+		NodeCursor nc = graph.nodes();
 		while(nc.ok()) {
 			if(Thread.interrupted()) {
 				throw new InterruptedException();
 			}
 			Node node = nc.node();	
-
-			double flowSum = 0.0;
-			
+			double flowSum = 0.0;	
 			for(int i = 0; i < nodeArray.length; i++) {
 				if(nodeArray[i] != node) {
 					Node source = nodeArray[i];
@@ -73,8 +70,7 @@ public class FlowBetweenness implements CentralityAlgorithm {
 						}
 					}
 				}	
-			}
-			
+			}	
 			res.setNodeValue(node, flowSum);
 			nc.next();
 		}

@@ -18,7 +18,6 @@ import y.base.NodeCursor;
 public class NeighborhoodCoreness implements CentralityAlgorithm {
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.NEIGHBORHOOD_CORENESS, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
@@ -27,7 +26,7 @@ public class NeighborhoodCoreness implements CentralityAlgorithm {
 		Coreness corenessAlgorithm = new Coreness();
 		CentralityMap corenessMap = corenessAlgorithm.getValues(graphCopy);
 		Map<String, Double> nameCorenessMap = corenessMap.getMap();
-		
+		NodeCursor nc = graph.nodes();
 		while(nc.ok()) {
 			if(Thread.interrupted()) {
 				throw new InterruptedException();
@@ -39,8 +38,7 @@ public class NeighborhoodCoreness implements CentralityAlgorithm {
 				String nodeName = graph.getNodeName(neighbors.node());
 				neighborCorenessSum += nameCorenessMap.get(nodeName);
 				neighbors.next();
-			}
-			
+			}	
 			res.setNodeValue(node, neighborCorenessSum);
 			nc.next();
 		}
@@ -50,6 +48,7 @@ public class NeighborhoodCoreness implements CentralityAlgorithm {
 	@Override
 	public Set<GraphType> compatibleGraphTypes() {
 		Set<GraphType> compatibleTypes = new HashSet<GraphType>();
+		compatibleTypes.add(GraphType.WEIGHTED);
 		return compatibleTypes;
 	}
 

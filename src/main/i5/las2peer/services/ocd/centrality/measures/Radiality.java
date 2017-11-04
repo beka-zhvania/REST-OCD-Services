@@ -16,9 +16,9 @@ import i5.las2peer.services.ocd.graphs.GraphType;
 public class Radiality implements CentralityAlgorithm {
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
+		// The edge directions were reversed in the CentralityAlgorithmExecutor
 		Integration integrationAlgorithm = new Integration();
-		CentralityMap res = integrationAlgorithm.getValues(graph);
-		
+		CentralityMap res = integrationAlgorithm.getValues(graph);	
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.RADIALITY, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));	
 		return res;
 	}

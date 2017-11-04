@@ -20,7 +20,6 @@ import y.base.NodeCursor;
 public class BridgingCentrality implements CentralityAlgorithm {
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.BRIDGING_CENTRALITY, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		int n = graph.nodeCount();
@@ -65,6 +64,7 @@ public class BridgingCentrality implements CentralityAlgorithm {
 			}
 		}
 		
+		NodeCursor nc = graph.nodes();
 		while(nc.ok()) {
 			if(Thread.interrupted()) {
 				throw new InterruptedException();
@@ -81,7 +81,6 @@ public class BridgingCentrality implements CentralityAlgorithm {
 	@Override
 	public Set<GraphType> compatibleGraphTypes() {
 		Set<GraphType> compatibleTypes = new HashSet<GraphType>();
-		compatibleTypes.add(GraphType.DIRECTED);
 		compatibleTypes.add(GraphType.WEIGHTED);
 		return compatibleTypes;
 	}

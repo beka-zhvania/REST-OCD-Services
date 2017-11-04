@@ -25,10 +25,10 @@ import y.base.NodeCursor;
 public class CurrentFlowCloseness implements CentralityAlgorithm {
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.CURRENT_FLOW_CLOSENESS, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
+		NodeCursor nc = graph.nodes();
 		while(nc.ok()) {
 			if(Thread.interrupted()) {
 				throw new InterruptedException();
@@ -87,7 +87,6 @@ public class CurrentFlowCloseness implements CentralityAlgorithm {
 				throw new InterruptedException();
 			}
 			Node v = nc.node();
-			
 			NodeCursor nc2 = graph.nodes();
 			while(nc2.ok()) {
 				if(Thread.interrupted()) {
@@ -99,8 +98,7 @@ public class CurrentFlowCloseness implements CentralityAlgorithm {
 				res.setNodeValue(v, res.getNodeValue(v) + increaseV);
 				res.setNodeValue(w, res.getNodeValue(w) + increaseW);
 				nc2.next();
-			}
-			
+			}	
 			nc.next();
 		}
 		
@@ -113,7 +111,6 @@ public class CurrentFlowCloseness implements CentralityAlgorithm {
 			res.setNodeValue(node, (double)1/res.getNodeValue(node));
 			nc.next();
 		}
-		
 		return res;
 	}
 

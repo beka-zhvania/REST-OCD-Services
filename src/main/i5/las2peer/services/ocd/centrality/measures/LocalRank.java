@@ -18,20 +18,18 @@ import y.base.NodeCursor;
 public class LocalRank implements CentralityAlgorithm {
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.LOCAL_RANK, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
 		int localrank = 0;
 		Set<Integer> oneOrTwoStepNeighbors = new HashSet<Integer>();
-		
+		NodeCursor nc = graph.nodes();
 		while(nc.ok()) {
 			if(Thread.interrupted()) {
 				throw new InterruptedException();
 			}
 			Node node = nc.node();
-			localrank = 0;
-			
+			localrank = 0;	
 			NodeCursor c1 = node.successors();
 			while(c1.ok()) {
 				Node n1 = c1.node();

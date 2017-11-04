@@ -29,34 +29,40 @@ import y.base.NodeCursor;
 public class AlphaCentrality implements CentralityAlgorithm {
 	
 	private double alpha = 0.1;
+	private String e = "";
 	/*
 	 * PARAMETER NAMES
 	 */
 	protected static final String ALPHA_NAME = "Alpha";
+	protected static final String E_NAME = "External Status";
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.ALPHA_CENTRALITY, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
 		int n = graph.nodeCount();
-		Matrix A = graph.getNeighbourhoodMatrix();
-		A = A.transpose();
+		Matrix A_tr = graph.getNeighbourhoodMatrix().transpose();
 		
-		// Create identity matrix and vector consisting of only ones
+		// Create identity matrix and vector of external status
 		Matrix I = new CCSMatrix(n, n);
-		Vector ones = new BasicVector(n);
+		Vector eVector = new BasicVector(n);
 		for(int i = 0; i < n; i++) {
 			I.set(i, i, 1.0);
-			ones.set(i, 1.0);
+			eVector.set(i, 1.0);
+		}
+		if(!e.equals("")) {
+			String[] statusArray = e.split(",");
+			for(int i = 0; i < statusArray.length; i++) {
+				eVector.set(n-1-i, Double.parseDouble(statusArray[i])); // n-1-i because the last entry in the vector corresponds to the first node
+			}
 		}
 		
-		Matrix toInvert = I.subtract(A.multiply(alpha));
+		Matrix toInvert = I.subtract(A_tr.multiply(alpha));
 		MatrixInverter gauss = new GaussJordanInverter(toInvert);
 		Matrix inverse = gauss.inverse();
+		Vector resultVector = inverse.multiply(eVector);
 		
-		Vector resultVector = inverse.multiply(ones);
-		
+		NodeCursor nc = graph.nodes();
 		while(nc.ok()) {
 			if(Thread.interrupted()) {
 				throw new InterruptedException();
@@ -84,6 +90,7 @@ public class AlphaCentrality implements CentralityAlgorithm {
 	public Map<String, String> getParameters() {
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put(ALPHA_NAME, Double.toString(alpha));
+		parameters.put(E_NAME, e);
 		return parameters;
 	}
 	
@@ -92,6 +99,10 @@ public class AlphaCentrality implements CentralityAlgorithm {
 		if(parameters.containsKey(ALPHA_NAME)) {
 			alpha = Double.parseDouble(parameters.get(ALPHA_NAME));
 			parameters.remove(ALPHA_NAME);
+		}
+		if(parameters.containsKey(E_NAME)) {
+			e = parameters.get(E_NAME);
+			parameters.remove(E_NAME);
 		}
 		if(parameters.size() > 0) {
 			throw new IllegalArgumentException();

@@ -18,25 +18,22 @@ import y.base.NodeCursor;
 public class HIndex implements CentralityAlgorithm {
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.H_INDEX, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
+		NodeCursor nc = graph.nodes();
 		while(nc.ok()) {
 			if(Thread.interrupted()) {
 				throw new InterruptedException();
 			}
-			Node node = nc.node();
-			
+			Node node = nc.node();		
 			int h = 0;
 			boolean checkNext = true;
-			NodeCursor neighbors = node.successors();
-			
+			NodeCursor neighbors = node.successors();		
 			while(graph.getWeightedNodeDegree(node)/2 >= h && checkNext) {
 				checkNext = false;
 				neighbors.toFirst();
-				int counter = 0;
-				
+				int counter = 0;		
 				while(neighbors.ok() && counter < h) {
 					if(graph.getWeightedNodeDegree(neighbors.node())/2 >= h) {
 						counter++;

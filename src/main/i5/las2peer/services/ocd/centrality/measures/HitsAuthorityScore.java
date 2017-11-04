@@ -9,11 +9,11 @@ import org.la4j.matrix.Matrix;
 import org.la4j.vector.Vector;
 import org.la4j.vector.dense.BasicVector;
 
-import i5.las2peer.services.ocd.algorithms.utils.MatrixOperations;
 import i5.las2peer.services.ocd.centrality.data.CentralityCreationLog;
 import i5.las2peer.services.ocd.centrality.data.CentralityCreationType;
 import i5.las2peer.services.ocd.centrality.data.CentralityMeasureType;
 import i5.las2peer.services.ocd.centrality.utils.CentralityAlgorithm;
+import i5.las2peer.services.ocd.centrality.utils.MatrixOperations;
 import i5.las2peer.services.ocd.centrality.data.CentralityMap;
 import i5.las2peer.services.ocd.graphs.CustomGraph;
 import i5.las2peer.services.ocd.graphs.GraphType;
@@ -23,11 +23,11 @@ import y.base.NodeCursor;
 public class HitsAuthorityScore implements CentralityAlgorithm {
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.HITS_AUTHORITY_SCORE, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));	
-		int n = nc.size();
 		
+		NodeCursor nc = graph.nodes();
+		int n = graph.nodeCount();
 		// If the graph contains no edges
 		if(graph.edgeCount() == 0) {
 			while(nc.ok()) {
@@ -36,7 +36,7 @@ public class HitsAuthorityScore implements CentralityAlgorithm {
 				nc.next();
 			}
 			return res;
-		}
+		}	
 		
 		Matrix A = graph.getNeighbourhoodMatrix();
 		Vector hubWeights = new BasicVector(n);
@@ -88,7 +88,6 @@ public class HitsAuthorityScore implements CentralityAlgorithm {
 			res.setNodeValue(nc.node(), authorityWeights.get(nc.node().index()));
 			nc.next();
 		}
-
 		return res;
 	}
 

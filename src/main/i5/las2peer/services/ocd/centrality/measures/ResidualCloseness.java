@@ -25,8 +25,8 @@ public class ResidualCloseness implements CentralityAlgorithm {
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.RESIDUAL_ClOSENESS, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
-		NodeCursor nc = graph.nodes();
 		
+		NodeCursor nc = graph.nodes();	
 		// If there are less than 3 nodes
 		if(graph.nodeCount() < 3) {
 			while(nc.ok()) {
@@ -38,8 +38,7 @@ public class ResidualCloseness implements CentralityAlgorithm {
 		
 		// Calculate the network closeness (for normalization)
 		double[] edgeWeights = graph.getEdgeWeights();
-		double networkCloseness = 0.0;
-		
+		double networkCloseness = 0.0;	
 		while(nc.ok()) {
 			if(Thread.interrupted()) {
 				throw new InterruptedException();
@@ -57,8 +56,7 @@ public class ResidualCloseness implements CentralityAlgorithm {
 		
 		Matrix A = graph.getNeighbourhoodMatrix();
 		int n = graph.nodeCount();
-		Node[] nodes = graph.getNodeArray();
-		
+		Node[] nodes = graph.getNodeArray();	
 		// Remove and re-add each node (by removing its edges)
 		for(int k = 0; k < n; k++) {
 			Node currentNode = nodes[k];
@@ -71,8 +69,7 @@ public class ResidualCloseness implements CentralityAlgorithm {
 			
 			nc.toFirst();
 			double[] newEdgeWeights = graph.getEdgeWeights();
-			double distSum = 0.0;
-			
+			double distSum = 0.0;		
 			// Calculate the sum of distances in the graph without the current node
 			while(nc.ok()) {
 				if(Thread.interrupted()) {

@@ -1,4 +1,4 @@
-package i5.las2peer.services.ocd.algorithms.utils;
+package i5.las2peer.services.ocd.centrality.utils;
 
 import org.la4j.matrix.Matrix;
 import org.la4j.vector.Vector;

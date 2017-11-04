@@ -24,11 +24,11 @@ import y.base.NodeCursor;
 public class CentroidValue implements CentralityAlgorithm {
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
-		int n = graph.nodeCount();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.CENTROID_VALUE, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
+		NodeCursor nc = graph.nodes();
+		int n = graph.nodeCount();
 		double[] edgeWeights = graph.getEdgeWeights();
 		Matrix dist = new CCSMatrix(n, n);
 		while(nc.ok()) {
@@ -49,16 +49,14 @@ public class CentroidValue implements CentralityAlgorithm {
 			if(Thread.interrupted()) {
 				throw new InterruptedException();
 			}
-			Node v = nc.node();	
-			
+			Node v = nc.node();			
 			int min = n;
 			NodeCursor nc2 = graph.nodes();
 			while(nc2.ok()) {
 				Node w = nc2.node();
 				if(v != w) {
 					int gammaVW = 0;
-					int gammaWV = 0;
-					
+					int gammaWV = 0;			
 					for(int i = 0; i < n; i++) {
 						double distV = dist.get(v.index(), i);
 						double distW = dist.get(w.index(), i);
@@ -66,16 +64,13 @@ public class CentroidValue implements CentralityAlgorithm {
 							gammaVW++;
 						else if(distW < distV)
 							gammaWV++;
-					}
-					
+					}			
 					int fVW = gammaVW - gammaWV;
 					if(fVW < min)
 						min = fVW;
-				}
-				
+				}			
 				nc2.next();
-			}
-			
+			}		
 			res.setNodeValue(v, min);
 			nc.next();
 		}

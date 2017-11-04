@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.la4j.matrix.Matrix;
-
 import i5.las2peer.services.ocd.centrality.data.CentralityCreationLog;
 import i5.las2peer.services.ocd.centrality.data.CentralityCreationType;
 import i5.las2peer.services.ocd.centrality.data.CentralityMeasureType;
@@ -20,49 +18,37 @@ import y.base.NodeCursor;
 public class BridgingCoefficient implements CentralityAlgorithm {
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.BRIDGING_COEFFICIENT, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
-		Matrix A = graph.getNeighbourhoodMatrix();
-		int n = graph.nodeCount();
-		
+		NodeCursor nc = graph.nodes();
 		while(nc.ok()) {
 			if(Thread.interrupted()) {
 				throw new InterruptedException();
 			}
 			Node node = nc.node();	
-			int v = node.index();
-			
 			// Calculate the probability of leaving the direct neighborhood subgraph in two steps
 			double leavingProbability = 0.0;
-			double nodeWeightedOutDegree = 0.0;
-			
-			for(int i = 0; i < n; i++) {
-				double nodeEdgeWeight = A.get(v, i);
+			double nodeWeightedOutDegree = graph.getWeightedOutDegree(node);
+			NodeCursor neighbors = node.successors();
+			while(neighbors.ok()) {
+				Node neighbor = neighbors.node();
+				double nodeEdgeWeight = graph.getEdgeWeight(node.getEdgeTo(neighbor));
 				if(nodeEdgeWeight > 0) {
-					nodeWeightedOutDegree += nodeEdgeWeight;
-					double neighborWeightedOutDegree = 0.0;
-					double neighborLeavingProbability = 0.0;
-					for(int j = 0; j < n; j++) {
-						double neighborEdgeWeight = A.get(i, j);
-						if(neighborEdgeWeight > 0 && j != v) {
-							neighborWeightedOutDegree += neighborEdgeWeight;
-							if(A.get(v, j) == 0) {
-								neighborLeavingProbability += nodeEdgeWeight * neighborEdgeWeight;
-							}
+					double neighborWeightedOutDegree = graph.getWeightedOutDegree(neighbor);
+					NodeCursor twoStepNeighbors = neighbor.successors();
+					while(twoStepNeighbors.ok()) {
+						Node twoStepNeighbor = twoStepNeighbors.node();
+						double neighborEdgeWeight = graph.getEdgeWeight(neighbor.getEdgeTo(twoStepNeighbor));
+						if(twoStepNeighbor != node && node.getEdgeTo(twoStepNeighbor) == null) {
+							// If twoStepNeighbor is not in the direct neighborhood graph
+							leavingProbability += nodeEdgeWeight/nodeWeightedOutDegree * neighborEdgeWeight/neighborWeightedOutDegree;
 						}
+						twoStepNeighbors.next();
 					}
-					if(neighborWeightedOutDegree != 0)
-						neighborLeavingProbability /= neighborWeightedOutDegree;
-					
-					leavingProbability += neighborLeavingProbability;
 				}
-			}
-			
-			if(nodeWeightedOutDegree != 0)
-				leavingProbability /= nodeWeightedOutDegree;
-			
+				neighbors.next();
+			}	
 			res.setNodeValue(node, leavingProbability);
 			nc.next();
 		}
@@ -72,7 +58,6 @@ public class BridgingCoefficient implements CentralityAlgorithm {
 	@Override
 	public Set<GraphType> compatibleGraphTypes() {
 		Set<GraphType> compatibleTypes = new HashSet<GraphType>();
-		compatibleTypes.add(GraphType.DIRECTED);
 		compatibleTypes.add(GraphType.WEIGHTED);
 		return compatibleTypes;
 	}

@@ -27,26 +27,22 @@ public class ClusterRank implements CentralityAlgorithm {
 			if(Thread.interrupted()) {
 				throw new InterruptedException();
 			}
-			Node node = nc.node();
-			
+			Node node = nc.node();	
 			// Calculate clustering coefficient
 			int maxEdges = node.successors().size() * (node.successors().size() - 1);
 			int edgeCount = 0;
 			double clusteringCoefficient = 0;
 			
-			if(maxEdges == 0)
+			if(maxEdges == 0) {
 				clusteringCoefficient = 0;
-			
+			}				
 			else {
 				Set<Node> outNeighborSet = new HashSet<Node>();
-				NodeCursor successors = node.successors();
-				
-				
+				NodeCursor successors = node.successors();			
 				while(successors.ok()) {
 					outNeighborSet.add(successors.node());
 					successors.next();
-				}
-				
+				}		
 				for(Node j : outNeighborSet) {
 					EdgeCursor edges = j.outEdges();
 					while(edges.ok()) {
@@ -55,22 +51,18 @@ public class ClusterRank implements CentralityAlgorithm {
 							edgeCount++;
 						edges.next();
 					}
-				}
-				
+				}	
 				clusteringCoefficient = (double) edgeCount/maxEdges;
 			}
 			
 			// Calculate sum of neighbors out-degrees (+1)
-			int degreeSum = 0;
-			
-			NodeCursor neighbors = node.successors();
-			
+			int degreeSum = 0;	
+			NodeCursor neighbors = node.successors();	
 			while(neighbors.ok()) {
 				Node neighbor = neighbors.node();
 				degreeSum += neighbor.outDegree() + 1;
 				neighbors.next();
-			}
-			
+			}	
 			res.setNodeValue(node, f(clusteringCoefficient)*degreeSum);
 			nc.next();
 		}

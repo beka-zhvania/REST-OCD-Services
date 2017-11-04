@@ -18,12 +18,11 @@ import y.base.NodeCursor;
 
 public class HarmonicCentrality implements CentralityAlgorithm {
 	
-	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
-		
+	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {	
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.HARMONIC_CENTRALITY, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
+		NodeCursor nc = graph.nodes();
 		// If there is only a single node
 		if(graph.nodeCount() == 1) {
 			res.setNodeValue(nc.node(), 0);
@@ -46,14 +45,14 @@ public class HarmonicCentrality implements CentralityAlgorithm {
 			}
 			res.setNodeValue(node, 1.0/(graph.nodeCount()-1.0)*inverseDistSum);
 			nc.next();
-		}
-		
+		}	
 		return res;
 	}
 
 	@Override
 	public Set<GraphType> compatibleGraphTypes() {
 		Set<GraphType> compatibleTypes = new HashSet<GraphType>();
+		compatibleTypes.add(GraphType.DIRECTED);
 		compatibleTypes.add(GraphType.WEIGHTED);
 		return compatibleTypes;
 	}

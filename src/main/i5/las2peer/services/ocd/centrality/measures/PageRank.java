@@ -21,10 +21,10 @@ public class PageRank implements CentralityAlgorithm {
 	public static final double d = 0.85;
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
-		NodeCursor nc = graph.nodes();
 		CentralityMap res = new CentralityMap(graph);
 		res.setCreationMethod(new CentralityCreationLog(CentralityMeasureType.PAGERANK, CentralityCreationType.CENTRALITY_MEASURE, this.getParameters(), this.compatibleGraphTypes()));
 		
+		NodeCursor nc = graph.nodes();
 		// Set initial PageRank of all nodes to 1
 		while(nc.ok()) {
 			res.setNodeValue(nc.node(), 1.0);
@@ -39,8 +39,7 @@ public class PageRank implements CentralityAlgorithm {
 			}
 			while(nc.ok()) {
 				Node i = nc.node();
-				double weightedRankSum = 0.0;
-				
+				double weightedRankSum = 0.0;		
 				EdgeCursor inLinks = i.inEdges();
 				while(inLinks.ok()) {
 					Edge eji = inLinks.edge();
