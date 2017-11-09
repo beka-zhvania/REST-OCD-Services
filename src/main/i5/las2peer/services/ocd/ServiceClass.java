@@ -183,7 +183,7 @@ public class ServiceClass extends RESTService {
 	private final static OcdAlgorithmFactory algorithmFactory = new OcdAlgorithmFactory();
 
 	/**
-	 * The factory used for creating simulations.
+	 * The factory used for creating centrality simulations.
 	 */
 	private final static CentralitySimulationFactory centralitySimulationFactory = new CentralitySimulationFactory();
 	
