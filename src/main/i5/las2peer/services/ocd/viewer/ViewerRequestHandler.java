@@ -14,7 +14,6 @@ import i5.las2peer.services.ocd.graphs.Cover;
 import i5.las2peer.services.ocd.graphs.CustomGraph;
 import i5.las2peer.services.ocd.utils.RequestHandler;
 
-
 /**
  * Manages different request-related tasks for the Service Class particularly for the viewer service.
  * Mainly in charge of simple IO tasks and of creating entity managers for persistence purposes.

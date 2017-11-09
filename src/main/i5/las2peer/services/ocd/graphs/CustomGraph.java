@@ -30,7 +30,6 @@ import org.la4j.matrix.Matrix;
 import org.la4j.matrix.sparse.CCSMatrix;
 
 import i5.las2peer.services.ocd.algorithms.utils.Termmatrix;
-import i5.las2peer.services.ocd.cooperation.data.simulation.SimulationAbstract;
 import i5.las2peer.services.ocd.cooperation.data.simulation.SimulationSeries;
 import i5.las2peer.services.ocd.graphs.properties.AbstractProperty;
 import i5.las2peer.services.ocd.graphs.properties.GraphProperty;
@@ -1136,7 +1135,7 @@ public class CustomGraph extends Graph2D {
 	 * Initialize the properties
 	 * 
 	 */
-	protected void initProperties() {
+	public void initProperties() {
 		
 		this.properties = new ArrayList<>(GraphProperty.size());
 		for (int i = 0; i < GraphProperty.size(); i++) {
