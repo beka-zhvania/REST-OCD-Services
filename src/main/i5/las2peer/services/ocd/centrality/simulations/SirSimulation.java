@@ -25,6 +25,7 @@ public class SirSimulation implements CentralitySimulation {
 	 */
 	protected static final String INFECTION_PROBABILITY_NAME = "Infection Probability";
 	protected static final String RECOVERY_PROBABILITY_NAME = "Recovery Probability";
+	protected static final String REPETITIONS_NAME = "Repetitions Per Node";
 	
 	Set<Node> infectedNodes;
 	Set<Node> recoveredNodes;
@@ -33,6 +34,7 @@ public class SirSimulation implements CentralitySimulation {
 	int sourceNodeId = 0;
 	double infectionProbability = 0.25;
 	double recoveryProbability = 1.0;
+	int repetitions = 100;
 	
 	public CentralityMap getValues(CustomGraph graph) throws InterruptedException {
 		CentralityMap map = new CentralityMap(graph);
@@ -44,8 +46,12 @@ public class SirSimulation implements CentralitySimulation {
 				throw new InterruptedException();
 			}
 			Node currentNode = nc.node();
-			double d = runSimulation(graph, currentNode);
-			map.setNodeValue(currentNode, d);
+			double spreadingSum = 0;
+			for(int i = 0; i < repetitions; i++) {
+				spreadingSum += runSimulation(graph, currentNode);
+			}	
+			spreadingSum /= repetitions;
+			map.setNodeValue(currentNode, spreadingSum);
 			nc.next();
 		}
 		return map;
@@ -125,6 +131,7 @@ public class SirSimulation implements CentralitySimulation {
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put(INFECTION_PROBABILITY_NAME, Double.toString(infectionProbability));
 		parameters.put(RECOVERY_PROBABILITY_NAME, Double.toString(recoveryProbability));
+		parameters.put(REPETITIONS_NAME, Integer.toString(repetitions));
 		return parameters;
 	}
 	
@@ -136,6 +143,10 @@ public class SirSimulation implements CentralitySimulation {
 		if(parameters.containsKey(RECOVERY_PROBABILITY_NAME)) {
 			recoveryProbability = Double.parseDouble(parameters.get(RECOVERY_PROBABILITY_NAME));
 			parameters.remove(RECOVERY_PROBABILITY_NAME);
+		}
+		if(parameters.containsKey(REPETITIONS_NAME)) {
+			repetitions = Integer.parseInt(parameters.get(REPETITIONS_NAME));
+			parameters.remove(REPETITIONS_NAME);
 		}
 		if(parameters.size() > 0) {
 			throw new IllegalArgumentException();

@@ -1,5 +1,7 @@
 package i5.las2peer.services.ocd.centrality.evaluation;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import org.apache.commons.math3.linear.RealMatrix;
@@ -108,7 +110,10 @@ public class StatisticalProcessor {
 		while(nc.ok()) {
 			Node currentNode = nc.node();
 			for(int j = 0; j < m; j++) {
-				mapsValues[i][j] = maps.get(j).getNodeValue(graph.getNodeName(currentNode));
+				// Round to 8 decimal places so nodes with marginally different values are not put into different "classes"
+				Double complete = maps.get(j).getNodeValue(graph.getNodeName(currentNode));
+				Double rounded = BigDecimal.valueOf(complete).setScale(8, RoundingMode.HALF_UP).doubleValue();
+				mapsValues[i][j] = rounded;
 			}
 			nc.next();
 			i++;
