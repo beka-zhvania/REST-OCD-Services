@@ -9,9 +9,9 @@ import java.net.HttpURLConnection;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,12 +39,13 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.la4j.matrix.sparse.CCSMatrix;
 
 import i5.las2peer.api.Context;
+import i5.las2peer.api.ManualDeployment;
+import i5.las2peer.api.logging.MonitoringEvent;
+import i5.las2peer.api.security.AgentNotFoundException;
+import i5.las2peer.api.security.UserAgent;
 import i5.las2peer.logging.L2pLogger;
-import i5.las2peer.logging.NodeObserver.Event;
-import i5.las2peer.p2p.AgentNotKnownException;
 import i5.las2peer.restMapper.RESTService;
 import i5.las2peer.restMapper.annotations.ServicePath;
-import i5.las2peer.security.UserAgent;
 import i5.las2peer.services.ocd.adapters.centralityInput.CentralityInputFormat;
 import i5.las2peer.services.ocd.adapters.centralityOutput.CentralityOutputFormat;
 import i5.las2peer.services.ocd.adapters.coverInput.CoverInputFormat;
@@ -59,10 +60,10 @@ import i5.las2peer.services.ocd.benchmarks.GroundTruthBenchmark;
 import i5.las2peer.services.ocd.benchmarks.OcdBenchmarkFactory;
 import i5.las2peer.services.ocd.centrality.data.CentralityCreationLog;
 import i5.las2peer.services.ocd.centrality.data.CentralityCreationType;
-import i5.las2peer.services.ocd.centrality.data.CentralityMeasureType;
-import i5.las2peer.services.ocd.centrality.data.CentralitySimulationType;
 import i5.las2peer.services.ocd.centrality.data.CentralityMap;
 import i5.las2peer.services.ocd.centrality.data.CentralityMapId;
+import i5.las2peer.services.ocd.centrality.data.CentralityMeasureType;
+import i5.las2peer.services.ocd.centrality.data.CentralitySimulationType;
 import i5.las2peer.services.ocd.centrality.evaluation.CorrelationCoefficient;
 import i5.las2peer.services.ocd.centrality.evaluation.StatisticalProcessor;
 import i5.las2peer.services.ocd.centrality.utils.CentralityAlgorithm;
@@ -119,7 +120,6 @@ import io.swagger.annotations.Info;
 import io.swagger.annotations.License;
 import io.swagger.annotations.SwaggerDefinition;
 import y.algo.GraphChecker;
-import y.base.Graph;
 
 /**
  * 
@@ -133,6 +133,7 @@ import y.base.Graph;
  */
 
 @ServicePath("ocd")
+@ManualDeployment
 @Api
 @SwaggerDefinition(info = @Info(title = "LAS2peer OCD Service", version = "1.0", description = "A RESTful service for overlapping community detection.", termsOfService = "sample-tos.io", contact = @Contact(name = "Sebastian Krott", email = "sebastian.krott@rwth-aachen.de"), license = @License(name = "Apache License 2", url = "http://www.apache.org/licenses/LICENSE-2.0")))
 public class ServiceClass extends RESTService {
@@ -208,11 +209,12 @@ public class ServiceClass extends RESTService {
 	//////////////////////////////////////////////////////////////////
 
 	public static String getUserName() {
-		return ((UserAgent) Context.getCurrent().getMainAgent()).getLoginName();
+		UserAgent userAgent = (UserAgent) Context.getCurrent().getMainAgent();
+		return userAgent.getLoginName();
 	}
 
 	public static long getUserId() {
-		return Context.getCurrent().getMainAgent().getId();
+		return Context.getCurrent().getMainAgent().getIdentifier().hashCode();
 	}
 
 	//////////////////////////////////////////////////////////////////
@@ -1505,7 +1507,7 @@ public class ServiceClass extends RESTService {
 				    	}
 				    	// Some centrality measures cannot be computed or do not give meaningful results on unconnected graphs
 				    	if(algorithm.getCentralityMeasureType() == CentralityMeasureType.CURRENT_FLOW_BETWEENNESS || algorithm.getCentralityMeasureType() == CentralityMeasureType.CURRENT_FLOW_CLOSENESS || algorithm.getCentralityMeasureType() == CentralityMeasureType.ECCENTRICITY || algorithm.getCentralityMeasureType() == CentralityMeasureType.CLOSENESS_CENTRALITY) {
-							if(!GraphChecker.isConnected((Graph)graph)) {
+							if(!GraphChecker.isConnected(graph)) {
 								return Response.serverError().entity("Show Error: This centrality measure can only be used on a connected network.").build();
 							}
 						}
@@ -1819,7 +1821,7 @@ public class ServiceClass extends RESTService {
 							return requestHandler.writeError(Error.PARAMETER_INVALID, "Invalid graph creation method status for simulation execution: " + graph.getCreationMethod().getStatus().name());
 				    	}
 				    	if(simulation.getSimulationType() == CentralitySimulationType.RANDOM_PACKAGE_TRANSMISSION_UNWEIGHTED) {
-							if(!GraphChecker.isConnected((Graph)graph)) {
+							if(!GraphChecker.isConnected(graph)) {
 								return Response.serverError().entity("Show Error: This simulation can only be used on a connected network.").build();
 							}
 						}
@@ -1917,7 +1919,7 @@ public class ServiceClass extends RESTService {
 	        	
 	        	List<CentralityMap> maps = new LinkedList<CentralityMap>();
 	        	for(int id : ids) {
-	        		long mapId = (long) id;
+	        		long mapId = id;
 	        		em = entityHandler.getEntityManager();
 	    	    	CentralityMapId cId = new CentralityMapId(mapId, gId);
 	    	    	
@@ -2044,7 +2046,7 @@ public class ServiceClass extends RESTService {
 	        	}
 	        	List<CentralityMap> maps = new ArrayList<CentralityMap>();
 	        	for(int id : mapIds) {
-	        		long mapId = (long) id;
+	        		long mapId = id;
 	        		em = entityHandler.getEntityManager();
 	    	    	CentralityMapId cId = new CentralityMapId(mapId, gId);
 	    	    	
@@ -2147,7 +2149,7 @@ public class ServiceClass extends RESTService {
 	        	}
 	        	List<CentralityMap> maps = new ArrayList<CentralityMap>();
 	        	for(int id : mapIds) {
-	        		long mapId = (long) id;
+	        		long mapId = id;
 	        		em = entityHandler.getEntityManager();
 	    	    	CentralityMapId cId = new CentralityMapId(mapId, gId);
 	    	    	
@@ -3690,7 +3692,7 @@ public class ServiceClass extends RESTService {
 				series = entityHandler.getSimulationSeriesByUser(userId);
 	
 			} catch (Exception e) {
-				L2pLogger.logEvent(this, Event.SERVICE_ERROR, "fail to get simulation series. " + e.toString());
+				L2pLogger.logEvent(this, MonitoringEvent.SERVICE_ERROR, "fail to get simulation series. " + e.toString());
 				e.printStackTrace();
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity("fail to get simulation series").build();
 			}
@@ -3728,7 +3730,7 @@ public class ServiceClass extends RESTService {
 					}
 				}
 			} catch (Exception e) {
-				L2pLogger.logEvent(this, Event.SERVICE_ERROR, "fail to get simulation series. " + e.toString());
+				L2pLogger.logEvent(this, MonitoringEvent.SERVICE_ERROR, "fail to get simulation series. " + e.toString());
 				e.printStackTrace();
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity("fail to get simulation series").build();
 			}
@@ -4008,7 +4010,7 @@ public class ServiceClass extends RESTService {
 					simulations = entityHandler.getSimulationSeriesGroups(getUserId(), firstIndex, length);
 				}
 			} catch (Exception e) {
-				L2pLogger.logEvent(this, Event.SERVICE_ERROR, "fail to get simulation series. " + e.toString());
+				L2pLogger.logEvent(this, MonitoringEvent.SERVICE_ERROR, "fail to get simulation series. " + e.toString());
 				e.printStackTrace();
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity("fail to get simulation series").build();
 			}
@@ -4087,7 +4089,7 @@ public class ServiceClass extends RESTService {
 					simulation.evaluate();
 	
 			} catch (Exception e) {
-				L2pLogger.logEvent(this, Event.SERVICE_ERROR, "fail to get simulation series. " + e.toString());
+				L2pLogger.logEvent(this, MonitoringEvent.SERVICE_ERROR, "fail to get simulation series. " + e.toString());
 				e.printStackTrace();
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity("fail to get simulation series").build();
 			}
@@ -4334,7 +4336,7 @@ public class ServiceClass extends RESTService {
 	 * @return HashMap
 	 * 
 	 */
-	public List<Long> getGraphIds() throws AgentNotKnownException {
+	public List<Long> getGraphIds() throws AgentNotFoundException {
 
 		String username = ((UserAgent) Context.getCurrent().getMainAgent()).getLoginName();
 		List<Long> graphIdList = new ArrayList<Long>();

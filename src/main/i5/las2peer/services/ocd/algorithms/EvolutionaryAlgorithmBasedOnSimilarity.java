@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 
 import org.apache.commons.exec.CommandLine;
@@ -17,8 +18,6 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.lang3.SystemUtils;
 import org.la4j.matrix.Matrix;
 import org.la4j.matrix.sparse.CCSMatrix;
-
-import java.util.Scanner;
 
 import i5.las2peer.services.ocd.algorithms.utils.OcdAlgorithmException;
 import i5.las2peer.services.ocd.benchmarks.OcdBenchmarkException;
