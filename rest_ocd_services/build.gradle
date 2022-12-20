@@ -289,12 +289,8 @@ test {
     workingDir = file("$rootDir")
 }
 
-task runMyTest(type: Test) {
-    workingDir = file("$rootDir")
-    filter {
-        includeTestsMatching '**.ServiceDatabaseTest'
-    }
-}
+
+
 
 task testWithoutDB(type: Test) {
     workingDir = file("$rootDir")
@@ -308,8 +304,6 @@ task testWithoutDB(type: Test) {
         excludeTestsMatching '**.DatabaseTest'
     }
 }
-
-
 
 
 
