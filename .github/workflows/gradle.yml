@@ -15,7 +15,7 @@ jobs:
       - name: Set up Arangodb
         uses: xinova/arangodb-action@v1
         with:
-          - arangodb version: 3.0.1
+          arangodb version: 3.0.1
       - name: Build WebOCD Service
         uses: actions/checkout@v2
       - name: Set up JDK 17
