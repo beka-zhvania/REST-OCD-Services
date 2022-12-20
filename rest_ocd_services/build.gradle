@@ -104,7 +104,7 @@ jar {
         // Exclude signatures to be able to natively bundle signed jars
         exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
     }
-   duplicatesStrategy = 'include' // this is needed due to duplicate error in gradle 7.0 which seems to be a bug
+    duplicatesStrategy = 'include' // this is needed due to duplicate error in gradle 7.0 which seems to be a bug
 
 
 
@@ -289,17 +289,27 @@ test {
     workingDir = file("$rootDir")
 }
 
-
-tasks.register('testWithoutDB', Test) {
+task runMyTest(type: Test) {
     workingDir = file("$rootDir")
-    exclude '**/ServiceDatabaseTest'
-    exclude '**/ServiceTest'
-    exclude '**/SimulationPersistenceTest'
-    exclude '**/CoverDatabaseTest'
-    exclude '**/CustomGraphDatabaseTest'
-    exclude '**/DatabaseMethodTest'
-    exclude '**/DatabaseTest'
+    filter {
+        includeTestsMatching '**.ServiceDatabaseTest'
+    }
 }
+
+task testWithoutDB(type: Test) {
+    workingDir = file("$rootDir")
+    filter {
+        excludeTestsMatching '**.ServiceDatabaseTest'
+        excludeTestsMatching '**.ServiceTest'
+        excludeTestsMatching '**.SimulationPersistenceTest'
+        excludeTestsMatching '**.CoverDatabaseTest'
+        excludeTestsMatching '**.CustomGraphDatabaseTest'
+        excludeTestsMatching '**.DatabaseMethodTest'
+        excludeTestsMatching '**.DatabaseTest'
+    }
+}
+
+
 
 
 
