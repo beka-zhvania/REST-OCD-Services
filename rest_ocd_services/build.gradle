@@ -290,6 +290,17 @@ test {
 }
 
 
+tasks.register('testWithoutDB', Test) {
+    workingDir = file("$rootDir")
+    exclude '**/ServiceDatabaseTest'
+    exclude '**/ServiceTest'
+    exclude '**/SimulationPersistenceTest'
+    exclude '**/CoverDatabaseTest'
+    exclude '**/CustomGraphDatabaseTest'
+    exclude '**/DatabaseMethodTest'
+    exclude '**/DatabaseTest'
+}
+
 
 
 // Only required when using Eclipse:
