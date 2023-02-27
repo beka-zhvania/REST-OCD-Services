@@ -16,8 +16,8 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 17
-      - uses: xinova/arangodb-action@v1
       - name: Set up database
+        uses: xinova/arangodb-action@v1
         with:
           arangodb version: 'latest'  # See https://hub.docker.com/_/arangodb for available versions
       - name: Grant execute permission for gradlew
