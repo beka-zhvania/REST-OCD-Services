@@ -23,4 +23,4 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run WebOCD Tests with Gradle
-        run: ./gradlew testWithoutDB
+        run: ./gradlew test --tests i5.las2peer.services.ocd.utils.DatabaseTest
