@@ -196,41 +196,57 @@ public class Database {
 	//////////////////////////////////////////////////////////////////// GRAPHS ///////////////////////////////////////////////////////////////////
 
 	/**
-	 * Persists a CustomGraph
-	 * 
-	 * @param graph
-	 *            CustomGraph
-	 * @return persistence key of the stored graph
+	 * Persists a CustomGraph with improved transaction handling.
+	 *
+	 * @param graph CustomGraph to be persisted.
+	 * @return persistence key of the stored graph.
 	 */
 	public String storeGraph(CustomGraph graph) {
-		String graphTransId = getTransactionId(CustomGraph.class, true);
-		String dynamicGraphTransId = "";
+		String graphTransId = null;
+		String dynamicGraphTransId = null;
 
-		if(graph instanceof DynamicGraph) {
+		try {
+			// Start transaction for CustomGraph
+			graphTransId = getTransactionId(CustomGraph.class, true);
+			graph.persist(db, graphTransId); // Persist graph
 
-			try {
+			if (graph instanceof DynamicGraph) {
+				// Start transaction for DynamicGraph if applicable
 				dynamicGraphTransId = getTransactionId(DynamicGraph.class, true);
 				((DynamicGraph) graph).persist(db, dynamicGraphTransId, graphTransId);
+
+				// Commit both transactions
 				db.commitStreamTransaction(dynamicGraphTransId);
-				db.commitStreamTransaction(graphTransId);
-			} catch (Exception e) {
-				db.abortStreamTransaction(dynamicGraphTransId);
-				db.commitStreamTransaction(graphTransId);
 			}
-		} else {
-			try {
-				graph.persist(db, graphTransId);
-				db.commitStreamTransaction(graphTransId);
-			}catch(Exception e) {
-				db.abortStreamTransaction(graphTransId);
-				e.printStackTrace();
+
+			// Commit the transaction for the CustomGraph
+			db.commitStreamTransaction(graphTransId);
+		} catch (Exception e) {
+			// Handle exceptions and abort transactions if necessary
+			if (dynamicGraphTransId != null) {
+				try {
+					db.abortStreamTransaction(dynamicGraphTransId);
+				} catch (Exception abortEx) {
+					// Log failure to abort dynamicGraphTransId
+				}
 			}
+			if (graphTransId != null) {
+				try {
+					db.abortStreamTransaction(graphTransId);
+				} catch (Exception abortEx) {
+					// Log failure to abort graphTransId
+				}
+			}
+			// Log the exception or rethrow as needed
+			e.printStackTrace();
+			return null; // Or handle more gracefully
 		}
 
-
+		// If all went well, return the graph's persistence key
 		return graph.getKey();
 	}
-	
+
+
 	/**
 	 * Updates a persisted graph by updating Attributes,nodes,edges and creationMethod
 	 * does NOT update changes in the covers or CentralityMaps that run on the given graph
