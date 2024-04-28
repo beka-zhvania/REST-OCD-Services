@@ -15,9 +15,10 @@ jobs:
           - 8529:8529  # Maps the default ArangoDB port to the same port on the host
         env:
           ARANGO_ROOT_PASSWORD: password
-        options: --health-cmd="curl --fail http://localhost:8529/_api/version || exit 1"
-          --health-interval=60s  # Increased interval
-          --health-timeout=30s  # Increased timeout
+        options: >-
+          --health-cmd="curl --fail http://localhost:8529/_api/version || exit 1"
+          --health-interval=60s
+          --health-timeout=30s
           --health-retries=5
 
     steps:
