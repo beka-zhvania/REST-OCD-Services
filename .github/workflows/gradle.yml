@@ -15,11 +15,6 @@ jobs:
           - 8529:8529  # Maps the default ArangoDB port to the same port on the host
         env:
           ARANGO_ROOT_PASSWORD: password
-        options: >-
-          --health-cmd="curl --fail http://localhost:8529/_api/version || exit 1"
-          --health-interval=60s
-          --health-timeout=30s
-          --health-retries=5
 
     steps:
       - name: Checkout Code
@@ -33,8 +28,20 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Delay for database stabilization
-        run: sleep 120  # Increased delay to allow more time for database readiness
+      - name: Wait for ArangoDB to be ready
+        run: |
+          echo "Waiting for ArangoDB to become ready..."
+          timeout=300  # 5 minutes timeout
+          while ! curl --fail http://localhost:8529/_api/version; do
+            echo "Waiting for ArangoDB to start..."
+            sleep 10
+            timeout=$((timeout-10))
+            if [ "$timeout" -le 0 ]; then
+              echo "ArangoDB failed to start in time."
+              exit 1
+            fi
+          done
+          echo "ArangoDB is ready!"
 
       - name: Build WebOCD Service
         run: ./gradlew build
@@ -53,4 +60,5 @@ jobs:
         if: failure()  # Executes only if previous steps fail
         run: |
           echo "Fetching additional diagnostic information..."
-          docker inspect 333800c9a800e29970d096298a123dc9be3fe4bf818f37ee45203039937044c1
+          CONTAINER_ID=$(docker ps -aqf "name=arangodb")
+          docker inspect $CONTAINER_ID
