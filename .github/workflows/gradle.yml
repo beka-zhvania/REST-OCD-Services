@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - '*'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,10 +12,13 @@ jobs:
       arangodb:
         image: arangodb/arangodb:3.10.0
         ports:
-          - 8529:8529  # Default ArangoDB port
+          - 8529:8529  # Maps the default ArangoDB port to the same port on the host
         env:
-          ARANGO_ROOT_PASSWORD: password  # Set the root password as expected by your app
-        options: --health-cmd="curl --fail http://localhost:8529/_api/version || exit 1" --health-interval=20s --health-timeout=10s --health-retries=10
+          ARANGO_ROOT_PASSWORD: password
+        options: --health-cmd="curl --fail http://localhost:8529/_api/version || exit 1"
+          --health-interval=30s
+          --health-timeout=20s
+          --health-retries=5
 
     steps:
       - name: Checkout Code
@@ -28,10 +32,13 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Delay for database stabilization
+        run: sleep 60  # Delays the next steps by 60 seconds
+
       - name: Build WebOCD Service
         run: ./gradlew build
         env:
-          ARANGO_HOST: localhost
+          ARANGO_HOST: localhost  # Ensures the application connects to ArangoDB on the same network
           ARANGO_PORT: 8529
           ARANGO_USER: root
           ARANGO_PASSWORD: password
