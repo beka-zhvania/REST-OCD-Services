@@ -31,15 +31,9 @@ jobs:
       - name: Wait for ArangoDB to be ready
         run: |
           echo "Waiting for ArangoDB to become ready..."
-          timeout=300  # 5 minutes timeout
-          while ! curl --fail http://localhost:8529/_api/version; do
+          until curl -s -u root:password --fail http://localhost:8529/_api/version; do
             echo "Waiting for ArangoDB to start..."
             sleep 10
-            timeout=$((timeout-10))
-            if [ "$timeout" -le 0 ]; then
-              echo "ArangoDB failed to start in time."
-              exit 1
-            fi
           done
           echo "ArangoDB is ready!"
 
