@@ -1,8 +1,5 @@
-# This workflow will build a Java project with Gradle
-
 name: Java CI with Gradle
 
-# Triggers the workflow on push events (on every branch)
 on:
   push:
     branches:
@@ -10,6 +7,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      arangodb:
+        image: arangodb/arangodb:3.10.0  
+        ports:
+          - 8529:8529  # Default ArangoDB port
+        options: --health-cmd="curl --fail http://localhost:8529/_api/version || exit 1" --health-interval=10s --health-timeout=5s --health-retries=5
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -19,12 +22,12 @@ jobs:
         with:
           java-version: 17
 
-      - name: Set up Arangodb
-        uses: xinova/arangodb-action@v1
-        with:
-          arangodb version: 'latest'  
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Clean and Build WebOCD Service
-        run: ./gradlew clean build --info
+      - name: Build WebOCD Service
+        run: ./gradlew build
+        env:
+          ARANGO_HOST: localhost
+          ARANGO_PORT: 8529
+
