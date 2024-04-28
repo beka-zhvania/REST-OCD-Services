@@ -6,10 +6,6 @@ import java.util.Collections;
 import java.util.Properties;
 import java.util.logging.Level;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.TypedQuery;
-
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
@@ -186,6 +182,11 @@ public class Database {
 		if(!collection.exists()) {
 			collection.create();
 		}
+		collectionNames.add(DynamicInteraction.collectionName); //13
+		collection = db.collection(DynamicInteraction.collectionName);
+		if(!collection.exists()) {
+			collection.create();
+		}
 
 	}
 	
@@ -203,6 +204,9 @@ public class Database {
 	 */
 	public String storeGraph(CustomGraph graph) {
 		String transId = getTransactionId(CustomGraph.class, true);
+		if(graph instanceof DynamicGraph) {
+			transId = getTransactionId(DynamicGraph.class, true);
+		}
 		try {
 			graph.persist(db, transId);
 			db.commitStreamTransaction(transId);
@@ -1766,7 +1770,7 @@ public class Database {
 			collections = collectionNames.subList(11,13).toArray(new String[1]);
 		}
 		else {
-			collections = collectionNames.subList(0, 13).toArray(new String[10]);
+			collections = collectionNames.subList(0, 14).toArray(new String[10]);
 		}
 		StreamTransactionEntity tx;
 		if(write) {
