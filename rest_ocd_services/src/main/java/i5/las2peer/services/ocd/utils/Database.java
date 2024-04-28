@@ -1739,6 +1739,7 @@ public class Database {
 	
 	public String getTransactionId(Class c, boolean write) {
 		String [] collections;
+		System.out.println("CLASS IS >>>>>>>>>>> " + c + " | collectionNames " + collectionNames + " collectionNames.size " + collectionNames.size());//TODO:DELETE
 		if(c == CustomGraph.class) {
 			collections = collectionNames.subList(0, 4).toArray(new String[4]);
 		}
@@ -1769,8 +1770,11 @@ public class Database {
 		else if(c == SimulationSeriesGroup.class){
 			collections = collectionNames.subList(11,13).toArray(new String[1]);
 		}
+		else if(c == DynamicInteraction.class){
+			collections = collectionNames.subList(13,14).toArray(new String[1]);
+		}
 		else {
-			collections = collectionNames.subList(0, 14).toArray(new String[10]);
+			collections = collectionNames.subList(0, 14).toArray(new String[14]);
 		}
 		StreamTransactionEntity tx;
 		if(write) {
