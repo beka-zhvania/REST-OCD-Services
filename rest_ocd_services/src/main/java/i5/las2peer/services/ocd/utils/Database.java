@@ -203,17 +203,31 @@ public class Database {
 	 * @return persistence key of the stored graph
 	 */
 	public String storeGraph(CustomGraph graph) {
-		String transId = getTransactionId(CustomGraph.class, true);
+		String graphTransId = getTransactionId(CustomGraph.class, true);
+		String dynamicGraphTransId = "";
+
 		if(graph instanceof DynamicGraph) {
-			transId = getTransactionId(DynamicGraph.class, true);
+
+			try {
+				dynamicGraphTransId = getTransactionId(DynamicGraph.class, true);
+				((DynamicGraph) graph).persist(db, dynamicGraphTransId, graphTransId);
+				db.commitStreamTransaction(dynamicGraphTransId);
+				db.commitStreamTransaction(graphTransId);
+			} catch (Exception e) {
+				db.abortStreamTransaction(dynamicGraphTransId);
+				db.commitStreamTransaction(graphTransId);
+			}
+		} else {
+			try {
+				graph.persist(db, graphTransId);
+				db.commitStreamTransaction(graphTransId);
+			}catch(Exception e) {
+				db.abortStreamTransaction(graphTransId);
+				e.printStackTrace();
+			}
 		}
-		try {
-			graph.persist(db, transId);
-			db.commitStreamTransaction(transId);
-		}catch(Exception e) {
-			db.abortStreamTransaction(transId);
-			e.printStackTrace();
-		}
+
+
 		return graph.getKey();
 	}
 	

@@ -73,16 +73,16 @@ public class DynamicGraph extends CustomGraph{
         this.dynamicInteractions.add(dynamicInteraction);
     }
 
-    @Override
-    public void persist(ArangoDatabase db, String transId) throws InterruptedException {
-        super.persist(db, transId);
+
+    public void persist(ArangoDatabase db, String dynamicGraphTransId, String graphTransId) throws InterruptedException {
+        super.persist(db, graphTransId);
         for(DynamicInteraction dynIn: dynamicInteractions) {
             dynIn.update(this);
         }
         ArangoCollection collection = db.collection(collectionName);
         BaseDocument bd = new BaseDocument();
-        DocumentUpdateOptions updateOptions = new DocumentUpdateOptions().streamTransactionId(transId);
-        DocumentCreateOptions createOptions = new DocumentCreateOptions().streamTransactionId(transId);
+        DocumentUpdateOptions updateOptions = new DocumentUpdateOptions().streamTransactionId(dynamicGraphTransId);
+        DocumentCreateOptions createOptions = new DocumentCreateOptions().streamTransactionId(dynamicGraphTransId);
 
         List<String> dynInteractionKeyList = new ArrayList<String>();
         for(DynamicInteraction di : this.dynamicInteractions) {
