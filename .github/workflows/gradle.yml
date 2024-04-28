@@ -16,8 +16,8 @@ jobs:
         env:
           ARANGO_ROOT_PASSWORD: password
         options: --health-cmd="curl --fail http://localhost:8529/_api/version || exit 1"
-          --health-interval=30s
-          --health-timeout=20s
+          --health-interval=60s  # Increased interval
+          --health-timeout=30s  # Increased timeout
           --health-retries=5
 
     steps:
@@ -33,17 +33,23 @@ jobs:
         run: chmod +x gradlew
 
       - name: Delay for database stabilization
-        run: sleep 60  # Delays the next steps by 60 seconds
+        run: sleep 120  # Increased delay to allow more time for database readiness
 
       - name: Build WebOCD Service
         run: ./gradlew build
         env:
-          ARANGO_HOST: localhost  # Ensures the application connects to ArangoDB on the same network
+          ARANGO_HOST: localhost
           ARANGO_PORT: 8529
           ARANGO_USER: root
           ARANGO_PASSWORD: password
           ARANGO_DB: ocdDB
 
       - name: Print ArangoDB logs
-        if: always()  # Ensures this step runs even if the steps before it fail
+        if: always()
         run: docker logs $(docker ps -aqf "name=arangodb")
+
+      - name: Additional diagnostics if service fails
+        if: failure()  # Executes only if previous steps fail
+        run: |
+          echo "Fetching additional diagnostic information..."
+          docker inspect 333800c9a800e29970d096298a123dc9be3fe4bf818f37ee45203039937044c1
