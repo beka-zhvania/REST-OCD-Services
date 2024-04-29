@@ -13,6 +13,7 @@ etc/ivy/ivy.jar
 /.idea
 restMapping.xml
 /out
+/ocd/arangoDB/db/*
 /ocd/doca/cover.txt
 /ocd/doca/network.txt
 /ocd/eclipselink/serviceCreateDLL.jdbc
@@ -33,3 +34,9 @@ restMapping.xml
 
 # Ignore Gradle build output directory
 build
+
+# ignore locally generated files used for ocda test generator
+/gpt/
+!/gpt/guide.md
+/ocda_test_generator_python_intermediary/
+rest_ocd_services/src/test/java/i5/las2peer/services/ocd/ocdatestautomation/testrunner/generatedclasses/
