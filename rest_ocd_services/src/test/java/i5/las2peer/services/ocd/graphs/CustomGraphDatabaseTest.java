@@ -1,30 +1,19 @@
 package i5.las2peer.services.ocd.graphs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import i5.las2peer.services.ocd.adapters.AdapterException;
-import i5.las2peer.services.ocd.graphs.CustomGraph;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import i5.las2peer.services.ocd.utils.Database;
-import i5.las2peer.services.ocd.utils.DatabaseConfig;
-import i5.las2peer.services.ocd.testsUtils.OcdTestGraphFactory;
 
-import java.io.FileNotFoundException;
 import java.util.*;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
 
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+
 
 //@Ignore
 public class CustomGraphDatabaseTest {
@@ -34,12 +23,12 @@ public class CustomGraphDatabaseTest {
 	private static final String invalidGraphName = "invalidGraphName";
 	private static Database database;
 	
-	@BeforeClass
+	@BeforeAll
 	public static void clearDatabase() {
 		database = new Database(true);
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void deleteDatabase() {
 		database.deleteDatabase();
 	}

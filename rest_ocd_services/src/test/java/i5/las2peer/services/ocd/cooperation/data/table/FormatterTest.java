@@ -1,10 +1,9 @@
 package i5.las2peer.services.ocd.cooperation.data.table;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import i5.las2peer.services.ocd.cooperation.data.table.Formatter;
 
 public class FormatterTest {
 

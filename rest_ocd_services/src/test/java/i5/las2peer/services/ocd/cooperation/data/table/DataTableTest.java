@@ -1,13 +1,10 @@
 package i5.las2peer.services.ocd.cooperation.data.table;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import org.junit.Test;
-
-import i5.las2peer.services.ocd.cooperation.data.table.DataTable;
-import i5.las2peer.services.ocd.cooperation.data.table.TableRow;
+import org.junit.jupiter.api.Test;
 
 
 public class DataTableTest {

@@ -1,20 +1,24 @@
 package i5.las2peer.services.ocd.cooperation.simulation.game;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import i5.las2peer.services.ocd.cooperation.simulation.Agent;
-import i5.las2peer.services.ocd.cooperation.simulation.game.Game;
 import sim.util.Bag;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class GameTest {
 
 	double trueTrue = 1.0;
@@ -76,7 +80,7 @@ public class GameTest {
 		assertEquals(falseFalse, payoff, 0.01);
 	}
 	
-	@Before
+	@BeforeEach
 	public void setUpMocks() {
 
 		Bag bag = new Bag();
@@ -87,6 +91,8 @@ public class GameTest {
 		Mockito.when(agent.getNeighbourhood()).thenReturn(bag);
 
 		Mockito.when(game.getPayoff(true, true)).thenReturn(trueTrue);
+
+		// unnecessary stabbing for current tests
 		Mockito.when(game.getPayoff(true, false)).thenReturn(trueFalse);
 		Mockito.when(game.getPayoff(false, true)).thenReturn(falseTrue);
 		Mockito.when(game.getPayoff(false, false)).thenReturn(falseFalse);

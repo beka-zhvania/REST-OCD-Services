@@ -1,14 +1,17 @@
 package i5.las2peer.services.ocd.cooperation.simulation.termination;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import i5.las2peer.services.ocd.cooperation.simulation.Agent;
 import i5.las2peer.services.ocd.cooperation.simulation.DataRecorder;
@@ -17,7 +20,9 @@ import sim.engine.Schedule;
 import sim.engine.Stoppable;
 import sim.util.Bag;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class StationaryStateConditionTest {
 	
 	@Spy
@@ -49,7 +54,7 @@ public class StationaryStateConditionTest {
 	int minIterations = 1000;
 	int maxIterations = 10000;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 
 		Bag agentBag = new Bag();

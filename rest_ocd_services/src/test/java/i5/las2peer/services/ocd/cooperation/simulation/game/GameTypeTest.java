@@ -1,10 +1,8 @@
 package i5.las2peer.services.ocd.cooperation.simulation.game;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-
-import i5.las2peer.services.ocd.cooperation.simulation.game.GameType;
 
 public class GameTypeTest {
 

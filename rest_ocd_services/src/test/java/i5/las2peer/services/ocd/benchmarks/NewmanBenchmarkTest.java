@@ -1,17 +1,16 @@
 package i5.las2peer.services.ocd.benchmarks;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
 import java.util.List;
 
-import i5.las2peer.services.ocd.benchmarks.NewmanBenchmark;
 import i5.las2peer.services.ocd.graphs.Cover;
 import i5.las2peer.services.ocd.graphs.CustomGraph;
 
-import org.junit.Test;
-
 import org.graphstream.graph.Node;
+
 
 public class NewmanBenchmarkTest {
 

@@ -1,16 +1,13 @@
 package i5.las2peer.services.ocd.cooperation.data.mapping;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import i5.las2peer.services.ocd.cooperation.data.mapping.CoverSimulationGroupMapping;
-import i5.las2peer.services.ocd.cooperation.data.mapping.CoverSimulationSeriesMapping;
-import i5.las2peer.services.ocd.cooperation.data.mapping.MappingFactory;
 import i5.las2peer.services.ocd.cooperation.data.simulation.SimulationDataset;
 import i5.las2peer.services.ocd.cooperation.data.simulation.SimulationSeries;
 import i5.las2peer.services.ocd.cooperation.data.simulation.SimulationSeriesGroup;
@@ -18,7 +15,8 @@ import i5.las2peer.services.ocd.graphs.Community;
 import i5.las2peer.services.ocd.graphs.Cover;
 import i5.las2peer.services.ocd.graphs.CustomGraph;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 public class MappingFactoryTest {
 	
 	@Spy Cover cover;

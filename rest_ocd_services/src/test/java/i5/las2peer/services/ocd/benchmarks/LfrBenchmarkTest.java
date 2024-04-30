@@ -1,14 +1,15 @@
 package i5.las2peer.services.ocd.benchmarks;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
 import i5.las2peer.services.ocd.graphs.Cover;
 import i5.las2peer.services.ocd.graphs.CustomGraph;
-
-import org.junit.Test;
 
 import org.graphstream.graph.Node;
 
 import java.util.Iterator;
+
 
 public class LfrBenchmarkTest {
 	

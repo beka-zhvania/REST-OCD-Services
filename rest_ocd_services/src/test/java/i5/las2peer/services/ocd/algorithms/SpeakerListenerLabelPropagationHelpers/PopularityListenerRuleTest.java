@@ -1,6 +1,6 @@
 package i5.las2peer.services.ocd.algorithms.SpeakerListenerLabelPropagationHelpers;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import i5.las2peer.services.ocd.algorithms.utils.SlpaListenerRuleCommand;
 import i5.las2peer.services.ocd.algorithms.utils.SlpaPopularityListenerRule;
 import i5.las2peer.services.ocd.graphs.CustomGraph;
@@ -9,9 +9,8 @@ import i5.las2peer.services.ocd.testsUtils.OcdTestGraphFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
 import org.graphstream.graph.Node;
+import org.junit.jupiter.api.Test;
 
 public class PopularityListenerRuleTest {
 
@@ -26,11 +25,11 @@ public class PopularityListenerRuleTest {
 		}
 		receivedLabels.put(successors[0], 1);
 		receivedLabels.put(successors[successors.length == 0 ? 0 : successors.length-1], 1);
-		System.out.println("Labels:");
-		System.out.println(receivedLabels);
+		//System.out.println("Labels:");
+		//System.out.println(receivedLabels);
 		SlpaListenerRuleCommand listenerRule = new SlpaPopularityListenerRule();
 		int chosenLabel = listenerRule.getLabel(graph, listener, receivedLabels);
-		System.out.println("Chosen: " + chosenLabel);
+		//System.out.println("Chosen: " + chosenLabel);
 		assertEquals(chosenLabel, 0);
 	}
 

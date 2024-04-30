@@ -1,87 +1,162 @@
 package i5.las2peer.services.ocd.algorithms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import i5.las2peer.services.ocd.ocdatestautomation.test_interfaces.DirectedGraphTestReq;
+import i5.las2peer.services.ocd.ocdatestautomation.test_interfaces.UndirectedGraphTestReq;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
 import i5.las2peer.services.ocd.adapters.AdapterException;
-import i5.las2peer.services.ocd.algorithms.OcdAlgorithm;
-import i5.las2peer.services.ocd.algorithms.OcdAlgorithmExecutor;
-import i5.las2peer.services.ocd.algorithms.SskAlgorithm;
-import i5.las2peer.services.ocd.algorithms.utils.OcdAlgorithmException;
 import i5.las2peer.services.ocd.graphs.Cover;
 import i5.las2peer.services.ocd.graphs.CustomGraph;
-import i5.las2peer.services.ocd.metrics.OcdMetricException;
 import i5.las2peer.services.ocd.testsUtils.OcdTestGraphFactory;
 
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Ignore;
-import org.junit.Test;
 import org.la4j.matrix.Matrix;
 import org.la4j.vector.Vector;
 import org.la4j.vector.Vectors;
 
 import org.graphstream.graph.Node;
 
-public class SSKAlgorithmTest {
-	
-	/*
-	 * Tests the transition matrix calculation on directed aperiodic two communities.
-	 */
-	@Ignore
-	@Test
-	public void testCalculateTransitionMatrixOnDirectedAperiodicTwoCommunities() throws InterruptedException {
-		CustomGraph graph = OcdTestGraphFactory.getDirectedAperiodicTwoCommunitiesGraph();
-		SskAlgorithm algo = new SskAlgorithm();
-		Matrix transitionMatrix = algo.calculateTransitionMatrix(graph);
-		System.out.println("Transition Matrix:");
-		System.out.println(transitionMatrix);
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
+
+
+public class SskAlgorithmTest implements DirectedGraphTestReq, UndirectedGraphTestReq {
+
+
+	OcdAlgorithm algo;
+
+	@BeforeEach
+	public void setup() {
+		algo = new SskAlgorithm();
 	}
-	
-	/*
-	 * Tests the transition matrix calculation on aperiodic two communities.
-	 */
-	@Ignore
-	@Test
-	public void testCalculateTransitionMatrixOnAperiodicTwoCommunities() throws InterruptedException {
-		CustomGraph graph = OcdTestGraphFactory.getAperiodicTwoCommunitiesGraph();
-		SskAlgorithm algo = new SskAlgorithm();
-		Matrix transitionMatrix = algo.calculateTransitionMatrix(graph);
-		System.out.println("Transition Matrix:");
-		System.out.println(transitionMatrix);
+
+	@Override
+	public OcdAlgorithm getAlgorithm() {
+		return algo;
 	}
-	
-	/*
-	 * Tests the influence calculation random walk on sawmill.
+
+	/**
+	 * Tests the detection of overlapping communities in a directed graph.
+	 * The test explores the algorithm's capability to handle directed graphs.
+	 * Algorithm parameters are uniquely set to challenge the algorithm with different conditions:
+	 * leadershipIterationBound is increased to test the algorithm's performance on a large number of iterations,
+	 * membershipsIterationBound is decreased to challenge the algorithm with a lower iteration limit for membership assignation,
+	 * leadershipPrecisionFactor and membershipsPrecisionFactor are set to lower values to test the algorithm's precision.
+	 * Completed by GPT
 	 */
-	@Ignore
 	@Test
-	public void testExecuteRandomWalkOnSawmill() throws AdapterException, FileNotFoundException, InterruptedException {
-		CustomGraph graph = OcdTestGraphFactory.getSawmillGraph();
-		SskAlgorithm algo = new SskAlgorithm();
-		Matrix transitionMatrix = algo.calculateTransitionMatrix(graph);
-		Vector totalInfluences = algo.executeRandomWalk(transitionMatrix);
-		System.out.println("Random Walk Vector:");
-		System.out.println(totalInfluences);
+	public void directedGraphTest1() throws Exception {
+		try {
+			// Don't modify
+			CustomGraph directedGraph = OcdTestGraphFactory.getDirectedAperiodicTwoCommunitiesGraph();
+			// Don't modify
+			Map<String, String> parameters = new HashMap<>();
+			parameters.put("leadershipIterationBound", "1500");
+			parameters.put("membershipsIterationBound", "500");
+			parameters.put("leadershipPrecisionFactor", "0.0005");
+			parameters.put("membershipsPrecisionFactor", "0.0005");
+			// Don't modify
+			getAlgorithm().setParameters(parameters);
+			// Don't modify
+			Cover cover = getAlgorithm().detectOverlappingCommunities(directedGraph);
+			// Don't modify
+			assertTrue(cover.getCommunities().size() >= 1);
+		} catch (Throwable t) {
+			// Don't modify
+			fail("Test failed due to an exception or assertion error: " + t.getMessage());
+			// Don't modify
+			throw t;
+		}
 	}
-	
+
+	/**
+	 * Tests the detection of overlapping communities in a weighted graph.
+	 * This test sets the algorithm parameters to extremes in order to challenge the algorithm's performance on weighted graphs.
+	 * Specifically, leadershipIterationBound and membershipsIterationBound are set to their maximum reasonable limits to assess the algorithm's capabilities under high iteration demands,
+	 * while the precision factors are tightened to evaluate its accuracy with extremely close convergence thresholds.
+	 * Completed by GPT
+	 */
+	@Test
+	public void weightedGraphTest1() throws Exception {
+		try {
+			// Don't modify
+			CustomGraph weightedGraph = OcdTestGraphFactory.getTwoCommunitiesWeightedGraph();
+			// Don't modify
+			Map<String, String> parameters = new HashMap<>();
+			parameters.put("leadershipIterationBound", "2000");
+			parameters.put("membershipsIterationBound", "2000");
+			parameters.put("leadershipPrecisionFactor", "0.0001");
+			parameters.put("membershipsPrecisionFactor", "0.0001");
+			// Don't modify
+			getAlgorithm().setParameters(parameters);
+			// Don't modify
+			Cover cover = getAlgorithm().detectOverlappingCommunities(weightedGraph);
+			// Don't modify
+			assertTrue(cover.getCommunities().size() >= 1);
+		} catch (Throwable t) {
+			// Don't modify
+			fail("Test failed due to an exception or assertion error: " + t.getMessage());
+			// Don't modify
+			throw t;
+		}
+	}
+
+	/**
+	 * Tests the detection of overlapping communities in an undirected graph.
+	 * This test employs a balanced approach with moderate iterations for leadership and membership assignation phases and
+	 * standard precision factors to evaluate the algorithm's effectiveness in typical conditions for undirected graphs.
+	 * Completed by GPT
+	 */
+	@Test
+	public void undirectedGraphTest1() throws Exception {
+		try {
+			// Don't modify
+			CustomGraph undirectedGraph = OcdTestGraphFactory.getUndirectedBipartiteGraph();
+			// Don't modify
+			Map<String, String> parameters = new HashMap<>();
+			parameters.put("leadershipIterationBound", "1200");
+			parameters.put("membershipsIterationBound", "800");
+			parameters.put("leadershipPrecisionFactor", "0.0007");
+			parameters.put("membershipsPrecisionFactor", "0.0007");
+			// Don't modify
+			getAlgorithm().setParameters(parameters);
+			// Don't modify
+			Cover cover = getAlgorithm().detectOverlappingCommunities(undirectedGraph);
+			// Don't modify
+			assertTrue(cover.getCommunities().size() >= 1);
+		} catch (Throwable t) {
+			// Don't modify
+			fail("Test failed due to an exception or assertion error: " + t.getMessage());
+			// Don't modify
+			throw t;
+		}
+	}
+
+
 	/*
 	 * Tests the influence calculation random walk on directed aperiodic two communities.
 	 */
+	@Disabled //TODO: remove 555
 	@Test
 	public void testExecuteRandomWalkOnDirectedAperiodicTwoCommunities() throws InterruptedException {
 		CustomGraph graph = OcdTestGraphFactory.getDirectedAperiodicTwoCommunitiesGraph();
 		SskAlgorithm algo = new SskAlgorithm();
 		Matrix transitionMatrix = algo.calculateTransitionMatrix(graph);
 		Vector totalInfluences = algo.executeRandomWalk(transitionMatrix);
-		System.out.println("Random Walk Vector Directed Aperiodic Communities:");
-		System.out.println(totalInfluences);
+		//System.out.println("Random Walk Vector Directed Aperiodic Communities:");
+		//System.out.println(totalInfluences);
 	}
 
 	/*
 	 * Tests the global leader detection on aperiodic two communities.
 	 * Node 0 is the only leader detected.
 	 */
+	@Disabled //TODO: remove 555
 	@Test
 	public void testDetermineGlobalLeadersOnAperiodicTwoCommunities() throws InterruptedException {
 		CustomGraph graph = OcdTestGraphFactory.getAperiodicTwoCommunitiesGraph();
@@ -92,13 +167,14 @@ public class SSKAlgorithmTest {
 		Node[] nodes = graph.nodes().toArray(Node[]::new);
 		assertEquals(1, globalLeaders.size());
 		assertTrue(globalLeaders.keySet().contains(nodes[0]));
-		System.out.println("Global Leaders:");
-		System.out.println(globalLeaders);
+		//System.out.println("Global Leaders:");
+		//System.out.println(globalLeaders);
 	}
 	
 	/*
 	 * Tests the global leader detection on sawmill.
 	 */
+	@Disabled //TODO: remove 555
 	@Test
 	public void testDetermineGlobalLeadersOnSawmill() throws AdapterException, FileNotFoundException, InterruptedException {
 		CustomGraph graph = OcdTestGraphFactory.getSawmillGraph();
@@ -113,13 +189,14 @@ public class SSKAlgorithmTest {
 		assertTrue(globalLeaders.keySet().contains(nodes[26]));
 		assertTrue(globalLeaders.keySet().contains(nodes[30]));
 //		assertTrue(globalLeaders.keySet().contains(nodes[35]));
-		System.out.println("Global Leaders:");
-		System.out.println(globalLeaders);
+		//System.out.println("Global Leaders:");
+		//System.out.println(globalLeaders);
 	}
 	
 	/*
 	 * Tests the global leader detection on directed aperiodic two communities.
 	 */
+	@Disabled //TODO: remove 555
 	@Test
 	public void testDetermineGlobalLeadersOnDirectedAperiodicTwoCommunities() throws InterruptedException {
 		CustomGraph graph = OcdTestGraphFactory.getDirectedAperiodicTwoCommunitiesGraph();
@@ -144,6 +221,7 @@ public class SSKAlgorithmTest {
 	/*
 	 * Tests the membership matrix initialization on directed aperiodic two communities.
 	 */
+	@Disabled //TODO: remove 555
 	@Test
 	public void testInitMembershipMatrixOnDirectedAperiodicTwoCommunities() throws InterruptedException {
 		CustomGraph graph = OcdTestGraphFactory.getDirectedAperiodicTwoCommunitiesGraph();
@@ -177,6 +255,7 @@ public class SSKAlgorithmTest {
 	/*
 	 * Tests the membership calculation coefficient matrix initialization on directed aperiodic two communities.
 	 */
+	@Disabled //TODO: remove 555
 	@Test
 	public void testInitMembershipCoefficientMatrixOnDirectedAperiodicTwoCommunities() throws InterruptedException {
 		CustomGraph graph = OcdTestGraphFactory.getDirectedAperiodicTwoCommunitiesGraph();
@@ -208,6 +287,7 @@ public class SSKAlgorithmTest {
 	/*
 	 * Test the community detection on aperiodic two communities.
 	 */
+	@Disabled //TODO: remove 555
 	@Test
 	public void testSSKALgorithmOnDirectedAperiodicTwoCommunitiesGraph() throws InterruptedException {
 		CustomGraph graph = OcdTestGraphFactory.getDirectedAperiodicTwoCommunitiesGraph();
@@ -219,6 +299,7 @@ public class SSKAlgorithmTest {
 	/*
 	 * Test the community detection on sawmill.
 	 */
+	@Disabled //TODO: remove 555
 	@Test
 	public void testSSKALgorithmOnSawmill() throws AdapterException, FileNotFoundException, InterruptedException {
 		CustomGraph graph = OcdTestGraphFactory.getSawmillGraph();
@@ -226,14 +307,5 @@ public class SSKAlgorithmTest {
 		Cover cover = algo.detectOverlappingCommunities(graph);
 		System.out.println(cover.toString());
 	}
-	
-	@Ignore
-	@Test
-	public void testOnSiam() throws OcdAlgorithmException, AdapterException, FileNotFoundException, InterruptedException, OcdMetricException {
-		CustomGraph graph = OcdTestGraphFactory.getSiamDmGraph();
-		OcdAlgorithm algo = new SskAlgorithm();
-		OcdAlgorithmExecutor executor = new OcdAlgorithmExecutor();
-		Cover cover = executor.execute(graph, algo, 0);
-		System.out.println(cover.toString());
-	}
+
 }

@@ -1,21 +1,21 @@
 package i5.las2peer.services.ocd.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import org.junit.Before;
-import org.junit.Test;
 import org.la4j.matrix.Matrix;
 import org.la4j.matrix.dense.Basic2DMatrix;
 
 import i5.las2peer.services.ocd.graphs.Cover;
 import i5.las2peer.services.ocd.graphs.CustomGraph;
+
 import org.graphstream.graph.Node;
+
 
 public class InvocationHandlerTest {
 
@@ -34,7 +34,7 @@ public class InvocationHandlerTest {
 	long graphId;
 	long coverId;
 		
-	@Before
+	@BeforeEach
 	public void setUp() {
 
 		username = "eve";

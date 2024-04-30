@@ -1,12 +1,10 @@
 package i5.las2peer.services.ocd.cooperation.data.table;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import org.junit.Test;
-
-import i5.las2peer.services.ocd.cooperation.data.table.TableRow;
 
 public class TableRowTest {
 		

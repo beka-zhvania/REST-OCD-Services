@@ -1,10 +1,8 @@
 package i5.las2peer.services.ocd.cooperation.data.simulation;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-
-import i5.las2peer.services.ocd.cooperation.data.simulation.SimulationSeriesParameters;
 
 public class ParametersTest {
 

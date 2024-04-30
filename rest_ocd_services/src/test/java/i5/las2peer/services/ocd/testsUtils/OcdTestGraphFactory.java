@@ -109,7 +109,132 @@ public class OcdTestGraphFactory {
 		graph.setCreationMethod(log);
 		return graph;
 	}
-	
+
+
+	/**
+	 * @return a directed chain graph of 10 nodes
+	 */
+	public static CustomGraph getSimpleDirectedChainGraph() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("SimpleChain");
+		Node n[] = new Node[10];
+		for (int i = 0; i < 10; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+			graph.setNodeName(n[i], Integer.toString(i));
+		}
+		for (int i = 0; i < 9; i++) {
+			graph.addEdge(UUID.randomUUID().toString(), n[i], n[i + 1]);
+		}
+		GraphProcessor processor = new GraphProcessor();
+		graph.addType(GraphType.DIRECTED);
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+	/**
+	 * @return Generate directed or undirected simple hub graphs
+	 */
+	public static CustomGraph generateHubGraph(Boolean directed){
+		CustomGraph graph = new CustomGraph();
+		Node n[] = new Node[10];
+		for (int i = 0; i < 10; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+			graph.setNodeName(n[i], Integer.toString(i));
+		}
+		for (int i = 1; i < 10; i++) {
+			graph.addEdge(UUID.randomUUID().toString(), n[0], n[i]);
+
+		}
+		if (!directed){
+			GraphProcessor processor = new GraphProcessor();
+			processor.makeUndirected(graph);
+		} else{
+			graph.addType(GraphType.DIRECTED);
+		}
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+	/**
+	 * @return An undirected graph where there are undirected edges between
+	 * one center node and all other nodes
+	 */
+	public static CustomGraph getUndirectedHubGraph() {
+		CustomGraph graph = generateHubGraph(false);
+		graph.setName("undirected hub");
+		return generateHubGraph(false);
+	}
+
+	/**
+	 * @return A directed graph where one node is connected to all other nodes
+	 */
+	public static CustomGraph getDirectedHubGraph() {
+		CustomGraph graph = generateHubGraph(true);
+		graph.setName("directed hub");
+		return generateHubGraph(true);
+	}
+
+	/**
+	 * @return A directed graph where all nodes are connected to a single node
+	 */
+	public static CustomGraph getReverseDirectedHubGraph(){
+		CustomGraph graph = new CustomGraph();
+		Node n[] = new Node[10];
+		for (int i = 0; i < 10; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+			graph.setNodeName(n[i], Integer.toString(i));
+		}
+		for (int i = 1; i < 10; i++) {
+			graph.addEdge(UUID.randomUUID().toString(),n[i], n[0]);
+
+		}
+
+		graph.addType(GraphType.DIRECTED);
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+
+	/**
+	 * @return A 3 node clique connected (with a directed edge) to a 3 node directed subgraph
+	 */
+	public static CustomGraph getCliqueWithOutliersGraph() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("CliqueWithOutliers");
+		Node n[] = new Node[6];
+		for (int i = 0; i < 6; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+			graph.setNodeName(n[i], Integer.toString(i));
+		}
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[4]);
+		graph.addEdge(UUID.randomUUID().toString(), n[4], n[5]);
+		graph.addEdge(UUID.randomUUID().toString(), n[5], n[3]);
+
+		GraphProcessor processor = new GraphProcessor();
+		graph.addType(GraphType.DIRECTED);
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+
+	/**
+	 * @return A directed aperiodic graph with two communities
+	 */
 	public static CustomGraph getDirectedAperiodicTwoCommunitiesGraph() {
 		// Creates new graph
 		CustomGraph graph = new CustomGraph();
@@ -147,7 +272,122 @@ public class OcdTestGraphFactory {
 		graph.setCreationMethod(log);
 		return graph;
 	}
-	
+
+	/**
+	 * @return A simple undirected cycle graph
+	 */
+	public static CustomGraph getSimpleCycleGraph() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("SimpleCycleGraph");
+		Node n[] = new Node[4];
+		for (int i = 0; i < 4; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+		}
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[3]);
+
+
+
+
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+	/**
+	 * @return A small clique
+	 */
+	public static CustomGraph getSimpleClique() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("SimpleClique");
+		Node n[] = new Node[3];
+		for (int i = 0; i < 3; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+		}
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[2]);
+
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+	/**
+	 * @return An undirected bipartite graph
+	 */
+	public static CustomGraph getUndirectedBipartiteGraph() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("UndirectedBipartiteGraph");
+		Node n[] = new Node[5];
+		for (int i = 0; i < 5; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+		}
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[4], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[4]);
+		graph.addEdge(UUID.randomUUID().toString(), n[4], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[4]);
+		graph.addEdge(UUID.randomUUID().toString(), n[4], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[4]);
+
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+	/**
+	 * @return An undirected graph consisting of a combination
+	 * of a cycle and star graph.
+	 */
+	public static CustomGraph getUndirectedWheelGraph() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("WheelGraph");
+		Node n[] = new Node[5];
+		for (int i = 0; i < 5; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+		}
+		// Outer Cycle
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[4]);
+		graph.addEdge(UUID.randomUUID().toString(), n[4], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[4], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[4]);
+		// Center Node
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[1]);
+
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+
 	public static CustomGraph getSimpleTwoComponentsGraph() {
 		// Creates new graph
 		CustomGraph graph = new CustomGraph();
@@ -183,7 +423,438 @@ public class OcdTestGraphFactory {
 		graph.setCreationMethod(log);
 		return graph;
 	}
-	
+
+	/**
+	 *
+	 * @return a weighted graph consisting of equal edge weights
+	 */
+	public static CustomGraph getCompleteGraphWithEqualWeights() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("CompleteGraphWithEqualWeights");
+		Node[] n = new Node[3];
+		// Add nodes
+		for (int i = 0; i < 3; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+		}
+		// Add edges
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[1]);
+		// Set weights
+		graph.setEdgeWeight(graph.getEdge(0), 5);
+		graph.setEdgeWeight(graph.getEdge(1), 5);
+		graph.setEdgeWeight(graph.getEdge(2), 5);
+		graph.setEdgeWeight(graph.getEdge(3), 5);
+		graph.setEdgeWeight(graph.getEdge(4), 5);
+		graph.setEdgeWeight(graph.getEdge(5), 5);
+
+		graph.addType(GraphType.WEIGHTED);
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+	/**
+	 * @return a weighted chain graph with increasing weights
+	 */
+	public static CustomGraph getChainGraphWithIncreasingWeights() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("ChainGraphWithIncreasingWeights");
+		Node[] n = new Node[4];
+		// Add nodes
+		for (int i = 0; i < 4; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+		}
+		// Add edges
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[2]);
+		// Set weights
+		graph.setEdgeWeight(graph.getEdge(0), 1);
+		graph.setEdgeWeight(graph.getEdge(1), 1);
+		graph.setEdgeWeight(graph.getEdge(2), 2);
+		graph.setEdgeWeight(graph.getEdge(3), 2);
+		graph.setEdgeWeight(graph.getEdge(4), 3);
+		graph.setEdgeWeight(graph.getEdge(5), 3);
+
+		graph.addType(GraphType.WEIGHTED);
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+	/**
+	 * @return a graph consisting of a cycle that has an edge
+	 *  with a weight value that represents an outlier
+	 */
+	public static CustomGraph getLoopWithOutlierWeight() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("LoopWithOutlierWeight");
+		Node[] n = new Node[4];
+		// Add nodes
+		for (int i = 0; i < 4; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+		}
+		// Add edges
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[3]);
+		// Set weights
+		graph.setEdgeWeight(graph.getEdge(0), 1);
+		graph.setEdgeWeight(graph.getEdge(1), 1);
+		graph.setEdgeWeight(graph.getEdge(2), 1);
+		graph.setEdgeWeight(graph.getEdge(3), 1);
+		graph.setEdgeWeight(graph.getEdge(4), 1);
+		graph.setEdgeWeight(graph.getEdge(5), 1);
+		graph.setEdgeWeight(graph.getEdge(6), 50);
+		graph.setEdgeWeight(graph.getEdge(7), 50);
+
+		graph.addType(GraphType.WEIGHTED);
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+
+	/**
+	 * @return a chain graph where most weights have decimal values
+	 */
+	public static CustomGraph getChainWithDecimalWeights() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("FourNodeChainWithDecimalWeights");
+		Node[] n = new Node[4];
+		// Add nodes
+		for (int i = 0; i < 4; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+		}
+		// Add edges
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[2]);
+		// Set weights
+		graph.setEdgeWeight(graph.getEdge(0), 1.5);
+		graph.setEdgeWeight(graph.getEdge(1), 1.5);
+		graph.setEdgeWeight(graph.getEdge(2), 2.3);
+		graph.setEdgeWeight(graph.getEdge(3), 2.3);
+		graph.setEdgeWeight(graph.getEdge(4), 2);
+		graph.setEdgeWeight(graph.getEdge(5), 2);
+
+		graph.addType(GraphType.WEIGHTED);
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+	/**
+	 * @return a graph consisting of a cycle with only negative weights
+	 */
+	public static CustomGraph getNegativeCycleGraph() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("NegativeCycleGraph");
+		Node[] n = new Node[3];
+		for (int i = 0; i < 3; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+		}
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[0]);
+		graph.setEdgeWeight(graph.getEdge(0), -1);
+		graph.setEdgeWeight(graph.getEdge(1), -2);
+		graph.setEdgeWeight(graph.getEdge(2), -1);
+
+		graph.addType(GraphType.WEIGHTED);
+		graph.addType(GraphType.NEGATIVE_WEIGHTS);
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+	/**
+	 * @return a graph consisting of a mixture of positive and negative weights
+	 */
+	public static CustomGraph getMixedWeightsGraph() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("MixedWeightsGraph");
+		Node[] n = new Node[4];
+		for (int i = 0; i < 4; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+		}
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[0]);
+		graph.setEdgeWeight(graph.getEdge(0), 1.5);
+		graph.setEdgeWeight(graph.getEdge(1), -2.3);
+		graph.setEdgeWeight(graph.getEdge(2), 1);
+		graph.setEdgeWeight(graph.getEdge(3), -1);
+
+		graph.addType(GraphType.WEIGHTED);
+		graph.addType(GraphType.NEGATIVE_WEIGHTS);
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+	/**
+	 * @return a graph consisting of a cycle with only zero weights
+	 */
+	public static CustomGraph getZeroCycleGraph() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("ZeroWeightCycleGraph");
+		Node[] n = new Node[3];
+		for (int i = 0; i < 3; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+		}
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[0]);
+		graph.setEdgeWeight(graph.getEdge(0), 0);
+		graph.setEdgeWeight(graph.getEdge(1), 0);
+		graph.setEdgeWeight(graph.getEdge(2), 0);
+
+		graph.addType(GraphType.WEIGHTED);
+		graph.addType(GraphType.NEGATIVE_WEIGHTS);
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+	/**
+	 * @return a graph consisting of a mixture of zero and non-zero weights
+	 */
+	public static CustomGraph getZeroAndNonZeroWeightMixGraph() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("ZeroAndNonZeroWeightMixGraph");
+		Node[] n = new Node[4];
+		for (int i = 0; i < 4; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+		}
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[0]);
+		graph.setEdgeWeight(graph.getEdge(0), 0);
+		graph.setEdgeWeight(graph.getEdge(1), 0);
+		graph.setEdgeWeight(graph.getEdge(2), 0);
+		graph.setEdgeWeight(graph.getEdge(3), 0);
+		graph.setEdgeWeight(graph.getEdge(4), 1);
+		graph.setEdgeWeight(graph.getEdge(5), 1);
+		graph.setEdgeWeight(graph.getEdge(6), 2.5);
+		graph.setEdgeWeight(graph.getEdge(7), 2.5);
+		graph.addType(GraphType.WEIGHTED);
+		graph.addType(GraphType.ZERO_WEIGHTS);
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+	/**
+	 * @return a weighted graph consisting of two communities
+	 * connected with a zero weight edge
+	 */
+	public static CustomGraph getTwoCommunitiesGraphConnectedWithZeroWeightEdge() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("TwoCommunitiesConnectedWithZeroWeightEdge");
+		Node[] n = new Node[6];
+		// Add nodes
+		for (int i = 0; i < 6; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+		}
+		// Add edges within the first community
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[2]);
+
+		// Add edges within the second community
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[4]);
+		graph.addEdge(UUID.randomUUID().toString(), n[4], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[4], n[5]);
+		graph.addEdge(UUID.randomUUID().toString(), n[5], n[4]);
+		graph.addEdge(UUID.randomUUID().toString(), n[5], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[5]);
+
+		// Connect the two communities
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[0]);
+
+		// Set uniform weights for simplicity
+		Iterator<Edge> edges = graph.edges().iterator();
+		while (edges.hasNext()) {
+			Edge edge = edges.next();
+			graph.setEdgeWeight(edge, 1);
+		}
+
+		// Set different edge weights on several edges
+		graph.setEdgeWeight(graph.getEdge(0), 1.5);
+		graph.setEdgeWeight(graph.getEdge(1), 1.5);
+		graph.setEdgeWeight(graph.getEdge(2), 6.3);
+		graph.setEdgeWeight(graph.getEdge(3), 6.3);
+		graph.setEdgeWeight(graph.getEdge(4), 2);
+		graph.setEdgeWeight(graph.getEdge(5), 2);
+		graph.setEdgeWeight(graph.getEdge(8), 4);
+		graph.setEdgeWeight(graph.getEdge(9), 4);
+		graph.setEdgeWeight(graph.getEdge(12), 0);
+		graph.setEdgeWeight(graph.getEdge(13), 0);
+
+		graph.addType(GraphType.WEIGHTED);
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+
+	/**
+	 * @return a graph consisting of a cycle where every node has a self loop
+	 */
+	public static CustomGraph getAllNodeSelfLoopGraph() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("AllNodeSelfLoopGraph");
+		Node[] n = new Node[3];
+		for (int i = 0; i < 3; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+		}
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[0]);
+
+		// self loops
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[2]);
+
+
+		graph.addType(GraphType.SELF_LOOPS);
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+	/**
+	 * @return An undirected bipartite graph with self loops
+	 */
+	public static CustomGraph getBipartiteGraphWithSelfLoops() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("BipartiteGraphWithSelfLoops");
+		Node n[] = new Node[5];
+		for (int i = 0; i < 5; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+		}
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[4], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[4]);
+		graph.addEdge(UUID.randomUUID().toString(), n[4], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[4]);
+		graph.addEdge(UUID.randomUUID().toString(), n[4], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[4]);
+
+		// self loops
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[1]);
+
+		graph.addType(GraphType.SELF_LOOPS);
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+
+	/**
+	 * @return a weighted graph consisting of two communities
+	 */
+	public static CustomGraph getTwoCommunitiesWeightedGraph() {
+		CustomGraph graph = new CustomGraph();
+		graph.setName("TwoThreeNodeCommunities");
+		Node[] n = new Node[6];
+		// Add nodes
+		for (int i = 0; i < 6; i++) {
+			n[i] = graph.addNode(Integer.toString(i));
+		}
+		// Add edges within the first community
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[1], n[2]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[1]);
+		graph.addEdge(UUID.randomUUID().toString(), n[2], n[0]);
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[2]);
+
+		// Add edges within the second community
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[4]);
+		graph.addEdge(UUID.randomUUID().toString(), n[4], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[4], n[5]);
+		graph.addEdge(UUID.randomUUID().toString(), n[5], n[4]);
+		graph.addEdge(UUID.randomUUID().toString(), n[5], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[5]);
+
+		// Connect the two communities
+		graph.addEdge(UUID.randomUUID().toString(), n[0], n[3]);
+		graph.addEdge(UUID.randomUUID().toString(), n[3], n[0]);
+
+		// Set uniform weights for simplicity
+		Iterator<Edge> edges = graph.edges().iterator();
+		while (edges.hasNext()) {
+			Edge edge = edges.next();
+			graph.setEdgeWeight(edge, 1);
+		}
+
+		// Set different edge weights on several edges
+		graph.setEdgeWeight(graph.getEdge(0), 1.5);
+		graph.setEdgeWeight(graph.getEdge(1), 1.5);
+		graph.setEdgeWeight(graph.getEdge(2), 6.3);
+		graph.setEdgeWeight(graph.getEdge(3), 6.3);
+		graph.setEdgeWeight(graph.getEdge(4), 2);
+		graph.setEdgeWeight(graph.getEdge(5), 2);
+		graph.setEdgeWeight(graph.getEdge(8), 4);
+		graph.setEdgeWeight(graph.getEdge(9), 4);
+
+		graph.addType(GraphType.WEIGHTED);
+		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
+		log.setStatus(ExecutionStatus.COMPLETED);
+		graph.setCreationMethod(log);
+		return graph;
+	}
+
+
+
+
+
 	/*
 	 * A small test graph given in the original paper that introduces
 	 * the link communities algorithm.
@@ -818,6 +1489,25 @@ public class OcdTestGraphFactory {
 		GraphCreationLog log = new GraphCreationLog(GraphCreationType.UNDEFINED, new HashMap<String, String>());
 		log.setStatus(ExecutionStatus.COMPLETED);
 		graph.setCreationMethod(log);
+		return graph;
+	}
+
+	/*
+	 * Returns undirected karate graph, used in OCDA accuracy tests
+	 */
+	public static CustomGraph getUndirectedKarateGraph(){
+		CustomGraph graph = new CustomGraph();
+		try {
+			GraphInputAdapter inputAdapter = new GmlGraphInputAdapter();
+			inputAdapter.setReader(new FileReader(OcdTestConstants.zacharyGmlInputPath));
+			graph = inputAdapter.readGraph();
+			GraphProcessor graphProcessor = new GraphProcessor();
+			graphProcessor.makeUndirected(graph);
+
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		return graph;
 	}
 	

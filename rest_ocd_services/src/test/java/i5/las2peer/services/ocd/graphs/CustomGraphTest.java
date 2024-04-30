@@ -1,18 +1,17 @@
 package i5.las2peer.services.ocd.graphs;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import i5.las2peer.services.ocd.graphs.CustomGraph;
 import i5.las2peer.services.ocd.graphs.properties.GraphProperty;
-
-import org.junit.Test;
 
 import org.graphstream.graph.Node;
 import org.graphstream.graph.Edge;
+
 
 public class CustomGraphTest {
 
@@ -40,7 +39,7 @@ public class CustomGraphTest {
 		assertEquals(graph.getEdgeCount() - 1, copy.getEdgeCount());
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void testEdgeRemoval() {
 		CustomGraph graph = new CustomGraph();
 		Node node0 = graph.addNode("0");
@@ -56,7 +55,7 @@ public class CustomGraphTest {
 		assertEquals(6, graph.getEdgeCount());
 		graph.removeEdge(edge5);
 		assertEquals(5, graph.getEdgeCount());
-		graph.getEdgeWeight(edge5);
+		assertThrows(NullPointerException.class, () -> graph.getEdgeWeight(edge5));
 	}
 	
 	@Test

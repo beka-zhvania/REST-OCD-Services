@@ -1,13 +1,12 @@
 package i5.las2peer.services.ocd.cooperation.data.simulation;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import i5.las2peer.services.ocd.cooperation.data.simulation.AgentData;
 
 public class AgentDataTest {
 

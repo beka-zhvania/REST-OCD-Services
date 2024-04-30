@@ -1,30 +1,26 @@
 package i5.las2peer.services.ocd.cooperation.data.simulation;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
 
-import i5.las2peer.services.ocd.cooperation.data.simulation.Evaluation;
-import i5.las2peer.services.ocd.cooperation.data.simulation.SimulationDataset;
-import i5.las2peer.services.ocd.cooperation.data.simulation.SimulationSeries;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import i5.las2peer.services.ocd.graphs.Community;
 
-@RunWith(MockitoJUnitRunner.class)
-public class SimulationSeriesTest {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+@ExtendWith(MockitoExtension.class)
+public class SimulationSeriesTest {
 
 	@Spy
 	SimulationSeries simulation;
@@ -109,26 +105,24 @@ public class SimulationSeriesTest {
 	@Test
 	public void getAverageCommunityCooperationValueInvalidCommunity() {
 
-		thrown.expect(IllegalArgumentException.class);
-
 		SimulationSeries simulation = new SimulationSeries();
 		datasetList.add(dataset1);
 		simulation.setSimulationDatasets(datasetList);
-
 		Mockito.when(community1.getMemberIndices()).thenReturn(null);
-		simulation.getAverageCommunityCooperationValue(community1);
+
+
+		assertThrows(IllegalArgumentException.class, () ->simulation.getAverageCommunityCooperationValue(community1));
+
 
 	}
 
 	@Test
 	public void getAverageCommunityCooperationValueEmpty() {
 
-		thrown.expect(IllegalStateException.class);
-
 		SimulationSeries simulation = new SimulationSeries();
+		//Mockito.when(community1.getMemberIndices()).thenReturn(null); // unnecessary stubbing
+		assertThrows(IllegalStateException.class, () ->simulation.getAverageCommunityCooperationValue(community1));
 
-		Mockito.when(community1.getMemberIndices()).thenReturn(null);
-		simulation.getAverageCommunityCooperationValue(community1);
 
 	}
 

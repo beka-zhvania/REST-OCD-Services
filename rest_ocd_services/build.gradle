@@ -9,6 +9,8 @@ plugins {
     id 'application'
     id 'eclipse' // only required when using Eclipse
     id 'java-library'
+    id 'jacoco' // Jacoco used for coverage report for OCDA and other classes
+    id 'pmd' // PMD is used for calculating WebOCD quality metric
 }
 
 
@@ -27,9 +29,8 @@ repositories {
 
 dependencies {
 
-
-    // Use JUnit test framework.
-    testImplementation 'junit:junit:4.13'
+    // Add JavaParser dependency
+    implementation 'com.github.javaparser:javaparser-core:3.25.5'
 
     // las2peer bundle which is not necessary in the runtime path
     // compileOnly will be moved into the lib dir afterwards
@@ -73,7 +74,7 @@ dependencies {
     compileOnly("org.apache.xmlgraphics:batik-bridge:1.14") {
         exclude group: 'xml-apis', module: 'xml-apis'
     }
-    implementation "org.mockito:mockito-all:1.9.5"
+
     implementation "fr.irit.smac.thirdparty.edu.gmu.cs:mason:19"
     implementation "org.ojalgo:ojalgo:50.0.0"
     compileOnly "net.sbbi:sbbi-upnplib:1.0.4"
@@ -86,6 +87,15 @@ dependencies {
     //arangoDB Java driver
     implementation "com.arangodb:arangodb-java-driver:6.18.0"
     implementation "com.arangodb:jackson-dataformat-velocypack:3.0.1"
+
+    // Use JUnit test framework
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.0'
+    testImplementation 'org.mockito:mockito-core:3.12.4'
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.12.4'
+
+    // tools for code compilation and runtime analysis
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.0'
+    testImplementation 'org.junit.platform:junit-platform-launcher:1.7.0'
 }
 
 configurations {
@@ -104,7 +114,7 @@ jar {
         // Exclude signatures to be able to natively bundle signed jars
         exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
     }
-   duplicatesStrategy = 'include' // this is needed due to duplicate error in gradle 7.0 which seems to be a bug
+    duplicatesStrategy = 'include' // this is needed due to duplicate error in gradle 7.0 which seems to be a bug
 
 
 
@@ -285,9 +295,249 @@ task cleanAll {
     }
 }
 
-test {
-    workingDir = file("$rootDir")
+
+jacoco {
+    toolVersion = "0.8.8"
+    reportsDir = file("$buildDir/jacoco")
 }
+
+test {
+    useJUnitPlatform()
+    workingDir = file("$rootDir")
+    finalizedBy 'jacocoTestReport'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+
+// Configure PMD
+pmd {
+    toolVersion = '6.39.0'
+    sourceSets = [sourceSets.main, sourceSets.test]
+    consoleOutput = true // Show output in console
+    ignoreFailures = true // Set to true to not fail the build on PMD issues
+    reportsDir = file("$project.buildDir/reports/pmd") // Define the reports directory
+    ruleSetFiles = files("config/pmd/ruleset.xml") // Location of the rule set against which the code is checked
+    incrementalAnalysis = false
+
+
+}
+
+tasks.withType(org.gradle.api.plugins.quality.Pmd) {
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        html.outputLocation.set(layout.buildDirectory.file("reports/pmd/pmd.html"))
+        xml.outputLocation.set(layout.buildDirectory.file("reports/pmd/pmd.xml"))
+    }
+}
+
+// Run a custom test such as OCDA test. This task can be used to check dynamically
+// if e.g. auto-generated test can be run successfully
+task runCustomTests(type: JavaExec) {
+    // Check if a system property 'testClass' is provided
+    if (project.hasProperty('testClass')) {
+        // Set system property for the Java process
+        systemProperty 'testClassName', project.property('testClass')
+    }
+
+    // Enable assertions
+    jvmArgs '-ea'
+
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'i5.las2peer.services.ocd.ocdatestautomation.testrunner.CustomTestExecutor'
+}
+
+// Run initializeGraphTypeTestRelatedFiles method, which creates partially completed unit tests
+// that should be completed by GPT. these unit tests are for compatible graph types of the OCDA.
+// Additionally, a reference file is created which is used when
+// evaluating auto-generated unit tests (e.g. to see if something that wasn't supposed to be altered
+// was modified).
+task runInitializeGraphTypeTestRelatedFiles(type: JavaExec) {
+    doFirst {
+        // Check if 'ocdaName' property is provided at runtime
+        if (!project.hasProperty('ocdaName')) {
+            throw new GradleException("Property 'ocdaName' is required for this task")
+        }
+        // Set the argument with the provided property value
+        args = ['initializeGraphTypeTestRelatedFiles', project.property('ocdaName')]
+
+        println("Classpath: " + sourceSets.test.runtimeClasspath.getAsPath()) //TODO:DELETE
+    }
+
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'i5.las2peer.services.ocd.ocdatestautomation.OCDATestClassGenerator'
+}
+
+// Run initializeOCDAMethodTestFiles method, which creates partially completed unit tests
+// that should be completed by GPT. These unit tests are for the specified methods from the
+// OCDA class. Additionally, a reference file is created which is used when
+// evaluating auto-generated unit tests (e.g. to see if something that wasn't supposed to be altered
+// was modified).
+task runInitializeOCDAMethodTestFiles(type: JavaExec) {
+    doFirst {
+        if (!project.hasProperty('ocdaName')) {
+            throw new GradleException("Property 'ocdaName' is required for this task")
+        }
+        if (!project.hasProperty('methodNames')) {
+            throw new GradleException("Property 'methodNames' is required for this task")
+        }
+        String methodNamesArg = project.property('methodNames').split(',').join(' ')
+        args = ['initializeOCDAMethodTestFiles', project.property('ocdaName')] + methodNamesArg.tokenize()
+
+        println("Classpath: " + sourceSets.test.runtimeClasspath.getAsPath()) // Debugging line
+    }
+
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'i5.las2peer.services.ocd.ocdatestautomation.OCDATestClassGenerator'
+}
+
+
+// Run generateAndWriteOCDAAccuracyTest method which creates an OCDA accuracy test for a specified
+// OCD algorithm, using algorithm parameters generated by GPT. The test is then added to the main
+// test class of the algorithm.
+task runGenerateAndWriteOCDAAccuracyTest(type: JavaExec) {
+    doFirst {
+        // Check if 'ocdaName' property is provided at runtime
+        if (!project.hasProperty('ocdaName')) {
+            throw new GradleException("Property 'ocdaName' is required for this task")
+        }
+        // Set the argument with the provided property value
+        args = ['generateAndWriteOCDAAccuracyTest', project.property('ocdaName')]
+
+    }
+
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'i5.las2peer.services.ocd.ocdatestautomation.OCDATestClassGenerator'
+}
+
+// Run generateAndWriteGraphTypeRelatedTestPrompt method which creates a prompt to generate tests for graph types
+// compatible with the specified OCD algorithm. This includes partially completed unit tests, algorithm parameter
+// definitions, and the implementation of the setParameters method from the algorithm code.
+// Usage: gradle runGenerateAndWriteGraphTypeRelatedPromptByName -PocdaName=<NameOfTheOCDA>
+task runGenerateAndWriteGraphTypeRelatedTestPromptByName(type: JavaExec) {
+    doFirst {
+        // Check if 'ocdaName' property is provided at runtime
+        if (!project.hasProperty('ocdaName')) {
+            throw new GradleException("Property 'ocdaName' is required for this task")
+        }
+        // Set the argument with the provided property value, which is the name of the OCD algorithm
+        args = ['generateAndWriteGraphTypeRelatedTestPrompt', project.property('ocdaName')]
+
+        systemProperty 'projectRoot', rootProject.projectDir.absolutePath
+    }
+
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'i5.las2peer.services.ocd.automatedtesting.PromptGenerator'
+}
+
+
+/*
+ * This task runs the generateAndWriteOCDAParameterGenerationPrompt method from the PromptGenerator class.
+ * It creates and writes a prompt for generating parameters for the specified OCDA (OCD Algorithm) by passing the
+ * 'ocdaName' as an argument.
+ * Usage: gradle runGenerateAndWriteOCDAParameterGenerationPromptByName -PocdaName=<NameOfTheOCDA>
+ */
+task runGenerateAndWriteOCDAParameterGenerationPromptByName(type: JavaExec) {
+    doFirst {
+        // Check if 'ocdaName' property is provided at runtime
+        if (!project.hasProperty('ocdaName')) {
+            throw new GradleException("Property 'ocdaName' is required for this task.")
+        }
+        // Set the argument with the provided property value, which is the name of the OCD algorithm
+        args = ['generateAndWriteOCDAParameterGenerationPrompt', project.property('ocdaName')]
+
+        systemProperty 'projectRoot', rootProject.projectDir.absolutePath
+    }
+
+    // Sets the classpath for the task from the test source set, ensuring all necessary classes are available
+    classpath = sourceSets.test.runtimeClasspath
+    // Specifies the main class to be executed, which should contain the necessary main method logic
+    main = 'i5.las2peer.services.ocd.automatedtesting.PromptGenerator'
+}
+
+
+/*
+ * This task executes the runGenerateAndWriteOCDAMethodTestPrompt method inside the PromptGenerator class.
+ * It generates and writes a  prompt for tests of the specified OCDA methods for use with the GPT API.
+ * Properties:
+ * - ocdaName: Name of the OCDA for which to generate prompts.
+ * - methodNames: Comma-separated list of method names for which to generate prompts.
+ * Usage: gradle runGenerateAndWriteOCDAMethodTestPrompt -PocdaName=<OCDAName> -PmethodNames=<MethodName1>,<MethodName2>,...
+ */
+task runGenerateAndWriteOCDAMethodTestPrompt(type: JavaExec) {
+    doFirst {
+        if (!project.hasProperty('ocdaName')) {
+            throw new GradleException("Property 'ocdaName' is required for this task")
+        }
+        if (!project.hasProperty('methodNames')) {
+            throw new GradleException("Property 'methodNames' is required for this task")
+        }
+        String methodNamesArg = project.property('methodNames').split(',').join(' ')
+        args = ['runGenerateAndWriteOCDAMethodTestPrompt', project.property('ocdaName')] + methodNamesArg.tokenize()
+
+        systemProperty 'projectRoot', rootProject.projectDir.absolutePath
+        //println("Classpath: " + sourceSets.test.runtimeClasspath.getAsPath()) // Optional: for debugging
+    }
+
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'i5.las2peer.services.ocd.automatedtesting.PromptGenerator'
+}
+
+// Processes auto-generated test code generated by GPT for compatible graph types of the OCD algorithm.
+// This task evaluates test code related to graph types compatible with the specified OCD algorithm and
+// generates a prompt that outlines any issues found with the auto-generated code.
+task runProcessGraphTypeRelatedGPTTestCode(type: JavaExec) {
+    doFirst {
+        // Check if 'ocdaName' property is provided at runtime
+        if (!project.hasProperty('ocdaName')) {
+            throw new GradleException("Property 'ocdaName' is required for this task")
+        }
+        // Set the argument with the provided property value
+        args = ['processGraphTypeRelatedGPTTestCodeAndGenerateSubsequentPrompt', project.property('ocdaName')]
+
+        systemProperty 'projectRoot', rootProject.projectDir.absolutePath
+    }
+
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'i5.las2peer.services.ocd.automatedtesting.GPTCodeProcessor'
+}
+
+
+
+// Processes auto-generated test code generated by GPT for specified OCDA methods. This task
+// evaluates test code related to specific OCDA methods of specified OCD algorithm and
+// generates a prompt that outlines any issues found with the auto-generated code.
+task runProcessOCDAMethodRelatedGPTTestCode (type: JavaExec) {
+    doFirst {
+        if (!project.hasProperty('ocdaName')) {
+            throw new GradleException("Property 'ocdaName' is required for this task")
+        }
+        if (!project.hasProperty('methodNames')) {
+            throw new GradleException("Property 'methodNames' is required for this task")
+        }
+        String methodNamesArg = project.property('methodNames').split(',').join(' ')
+        args = ['processOCDAMethodGPTTestCodeAndGenerateSubsequentPrompt', project.property('ocdaName')] + methodNamesArg.tokenize()
+
+        systemProperty 'projectRoot', rootProject.projectDir.absolutePath
+        //println("Classpath: " + sourceSets.test.runtimeClasspath.getAsPath()) // Optional: for debugging
+    }
+
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'i5.las2peer.services.ocd.automatedtesting.GPTCodeProcessor'
+}
+
+
+
+
+
+
+
 
 // Executes WebOCD tests without database tests. This task is used for github actions.
 task testWithoutDB(type: Test) {

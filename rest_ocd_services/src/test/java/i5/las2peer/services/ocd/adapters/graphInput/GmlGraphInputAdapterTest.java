@@ -1,6 +1,6 @@
 package i5.las2peer.services.ocd.adapters.graphInput;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import i5.las2peer.services.ocd.adapters.AdapterException;
 import i5.las2peer.services.ocd.algorithms.utils.OcdAlgorithmException;
 import i5.las2peer.services.ocd.graphs.CustomGraph;
@@ -10,8 +10,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import org.graphstream.graph.Node;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class GmlGraphInputAdapterTest {
 

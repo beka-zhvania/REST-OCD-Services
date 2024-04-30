@@ -1,27 +1,22 @@
 package i5.las2peer.services.ocd.cooperation.simulation;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.la4j.matrix.dense.Basic2DMatrix;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ec.util.MersenneTwisterFast;
-import i5.las2peer.services.ocd.cooperation.simulation.Agent;
 import sim.field.network.Edge;
 import sim.field.network.Network;
 import sim.util.Bag;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.UUID;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AgentTest {
 
 	@Mock
@@ -62,7 +57,7 @@ public class AgentTest {
 
 	}
 	
-	@Test 
+	@Test
 	public void initialize() {
 		
 		Agent agent = new Agent();

@@ -1,6 +1,9 @@
 package i5.las2peer.services.ocd.metrics;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
 import i5.las2peer.services.ocd.algorithms.OcdAlgorithm;
 import i5.las2peer.services.ocd.algorithms.RandomWalkLabelPropagationAlgorithm;
 import i5.las2peer.services.ocd.algorithms.utils.OcdAlgorithmException;
@@ -9,17 +12,16 @@ import i5.las2peer.services.ocd.graphs.CustomGraph;
 import i5.las2peer.services.ocd.testsUtils.OcdTestCoverFactory;
 import i5.las2peer.services.ocd.testsUtils.OcdTestGraphFactory;
 
-import org.junit.Ignore;
-import org.junit.Test;
 import org.la4j.matrix.Matrix;
 import org.la4j.matrix.sparse.CCSMatrix;
+
 
 public class OmegaIndexTest {
 
 	/*
 	 * Tests SLPA result on sawmill.
 	 */
-	@Ignore
+	@Disabled
 	@Test
 	public void testOnSawmillRawLpa() throws Exception {
 		CustomGraph graph = OcdTestGraphFactory.getSawmillGraph();
