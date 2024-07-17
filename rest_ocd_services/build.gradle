@@ -21,20 +21,33 @@ repositories {
     // Use JCenter for resolving dependencies.
     mavenCentral()
 
+    //TODO: uncomment and replace flatdir when repository from dbis is fixed
     // DBIS Archiva
-    maven {
-        url "https://archiva.dbis.rwth-aachen.de:9911/repository/internal/"
+//    maven {
+//        url "https://archiva.dbis.rwth-aachen.de:9911/repository/internal/"
+//    }
+
+    // Include the libs directory as a repository
+    flatDir {
+        dirs 'libs'
     }
+
+
 }
+
 
 dependencies {
 
     // Add JavaParser dependency
     implementation 'com.github.javaparser:javaparser-core:3.25.5'
 
+    // TODO: uncomment below line when dbis repository is fixed
     // las2peer bundle which is not necessary in the runtime path
     // compileOnly will be moved into the lib dir afterwards
-    api "i5:las2peer-bundle:${project.property('core.version')}"
+    //api "i5:las2peer-bundle:${project.property('core.version')}"
+
+    // TODO: delete when above line is uncommented
+    api name: 'las2peer-bundle-1.2.3'
 
     //ocd service deps
     implementation "org.apache.commons:commons-exec:1.3"
@@ -169,6 +182,8 @@ task copyToLib(type: Copy) {
     from configurations.compileClasspath
     into "$rootDir/lib"
 }
+
+
 
 build.dependsOn copyJar
 build.dependsOn copyToLib
