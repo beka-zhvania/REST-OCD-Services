@@ -109,10 +109,9 @@ public class PromptGenerator {
      */
     public static String generateAndWriteGraphTypeRelatedTestPrompt(File ocdaCode) {
 
-        // Initialize an empty StringBuilder to concatenate strings
         StringBuilder stringBuilder = new StringBuilder();
 
-        // Get name of OCDA
+        // Extract OCDA name from the algorithm code
         String ocdaName = OCDAParser.getClassName(ocdaCode);
 
         // Add initial sentence to prompt that mentions OCDA
@@ -136,7 +135,7 @@ public class PromptGenerator {
                 .append("My algorithm has the following algorithm parameters and default parameter values:")
                 .append("\n\n");
 
-        // Extract OCDA parameters of from the algorithm code
+        // Extract OCDA parameters from the algorithm code
         List<String> ocdaParams = extractParameterNamesFromDeclarations(ocdaCode);
 
         // Extract full OCDA parameter declarations from the algorithm code, together with Javadoc comments (if present)

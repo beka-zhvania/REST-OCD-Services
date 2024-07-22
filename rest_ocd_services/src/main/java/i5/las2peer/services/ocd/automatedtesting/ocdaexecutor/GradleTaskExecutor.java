@@ -126,7 +126,7 @@ public class GradleTaskExecutor {
      * Executes the 'runInitializeGraphTypeTestRelatedFiles' Gradle task for a given OCD algorithm name.
      * This method is used to programmatically run a Gradle task that initializes test files related to
      * specific graph types compatible with the given OCDA algorithm. This includes creating a partially
-     * competed test class file that should be compelted by GPT and also a reference test class file which
+     * completed test class file that should be completed by GPT and also a reference test class file which
      * is used in the evaluation of auto-generated code
      *
      * @param ocdaName The name of the OCDA algorithm for which the test files are to be initialized.

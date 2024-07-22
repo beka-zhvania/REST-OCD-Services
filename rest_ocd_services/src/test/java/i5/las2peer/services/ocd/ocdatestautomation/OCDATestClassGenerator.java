@@ -397,7 +397,7 @@ public class OCDATestClassGenerator {
         // generate a test class with partially completed unit tests to which the GPT-generated tests  should be compared to
         generateAndWriteOCDTestClass(ocdaCode, true);
 
-        // Generate OCD algorithm test class with partially completed unit tests that will act as a reference for comparison
+        // Generate OCD algorithm test class with partially completed unit tests that will be completed by GPT
         generateAndWriteOCDTestClass(ocdaCode, false);
     }
 
@@ -417,11 +417,11 @@ public class OCDATestClassGenerator {
         File ocdaCode = getOcdaFile(ocdaName + ".java", "/src/main/java/i5/las2peer/services/ocd/algorithms/");
 
         /* Generate and write test classes that hold partially completed unit tests related to specific OCDA methods */
-        //methodNames = Arrays.asList("Item1", "calculateTransitiveLinkWeight", "calculateMemberships");
-        // generate a test class with partially completed unit tests to which the GPT-generated tests  should be compared to
+
+        // generate a test class with partially completed unit tests to which the GPT-generated tests should be compared to
         generateAndWriteOCDAMethodsTestClass(ocdaCode, methodNames,true);
 
-        // Generate OCD algorithm test class with partially completed unit tests  that will act as a reference for comparison
+        // Generate OCD algorithm test class with partially completed unit tests that will be completed by GPT
         generateAndWriteOCDAMethodsTestClass(ocdaCode, methodNames, false);
     }
 
@@ -480,24 +480,4 @@ public class OCDATestClassGenerator {
         }
     }
 
-
-
-
-//    public static void main(String[] args) {
-//        File ocdaCode = new File(FileHelpers.getOCDAPath("SskAlgorithm.java"));
-//
-//        /* Generate and write test classes that hold partially completed unit tests related to graph types */
-//
-//        // generate a test class with partially completed unit tests to which the GPT-generated tests  should be compared to
-////        generateAndWriteOCDTestClass(ocdaCode, true);
-////        // Generate OCD algorithm test class with partially completed unit tests that will act as a reference for comparison
-////        generateAndWriteOCDTestClass(ocdaCode, false);
-//
-////        /* Generate and write test classes that hold partially completed unit tests related to specific OCDA methods */
-////        List<String> stringList = Arrays.asList("Item1", "calculateTransitiveLinkWeight", "calculateMemberships");
-////        // generate a test class with partially completed unit tests to which the GPT-generated tests  should be compared to
-////        generateAndWriteOCDAMethodsTestClass(ocdaCode, stringList,true);
-////        // Generate OCD algorithm test class with partially completed unit tests  that will act as a reference for comparison
-////        generateAndWriteOCDAMethodsTestClass(ocdaCode, stringList, false);
-//    }
 }

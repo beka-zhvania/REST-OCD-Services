@@ -82,6 +82,7 @@ public class OCDSubmetric {
      *         and the value decreases as the number of missed parameters increases.
      */
     public static double evaluateAlgorithmParameterUsageRatio(File gptOutput, File ocdaCode){
+
         // Get all variable declarations in the OCDA class file
         List<String> variableDeclarations = OCDAParser.listClassVariables(ocdaCode);
 
@@ -96,17 +97,15 @@ public class OCDSubmetric {
         // Compatible graph types of the algorithm
         List<String> compatibleGraphTypes = OCDAParser.extractCompatibilitiesAndAddUndirectedGraphType(ocdaCode);
 
-
         // Number of algorithm parameters that were not set in the unit tests
         int missedAlgorithmParameterCount = 0;
 
         // Map to associate each compatibleGraphType with its corresponding test name
         Map<String, String> graphTypeToTestNameMap = getGraphTypeBasedTestNames();
 
-        // Check if each algorithm variable name is present in a unit test for each graph type. This is needed
-        // because every algorithm variable should be set by each unit test created by ChatGPT.
+        // Check if each algorithm parameter name is present in a unit test for each graph type. This is needed
+        // because every algorithm parameter should be set by each unit test created by ChatGPT.
         for (String compatibleGraphType : compatibleGraphTypes){
-            //System.out.println("------------- LOOKING AT GRAPH TYPE " + compatibleGraphType + " ------------------"); //TODO:DELETE
 
             String graphTypeTestName = graphTypeToTestNameMap.get(compatibleGraphType);
 
@@ -117,13 +116,11 @@ public class OCDSubmetric {
 
                 // Filter method calls to only include method calls related to setting OCDA parameters
                 List<String> filteredMethodCalls = extractParameterRelatedMethodCalls(methodCallsInTest);
-                //System.out.println("filtered method calls " + filteredMethodCalls); //TODO:DELETE
 
                 for (String algorithmParameterName : algorithmParameterNames) {
 
                     // OCDA parameter can be set using parameter name constant as well, hence it must be considered
                     String algorithmParameterNameConstant = FormattingHelpers.convertCamelCaseToUpperCaseWithUnderscores(algorithmParameterName);
-
 
                     // parameter setting uses either parameter name (e.g. "accuracy") or parameter name constant (e.g. ACCURACY_NAME)
                     boolean unitTestContainsOCDAParameter = filteredMethodCalls.stream()
@@ -133,27 +130,19 @@ public class OCDSubmetric {
                                                     !unitTestParameterSetting.contains("\"" + algorithmParameterNameConstant + "\""))
                             );
 
-
                     if (!unitTestContainsOCDAParameter) {
-                        //System.out.println("Missing algorithm parameter: unit test " + graphTypeTestName + " must set algorithm parameter " + algorithmParameterName);//TODO:DELETE
                         promptImprovementRemarks.add("Missing algorithm parameter: unit test " + graphTypeTestName + " must set algorithm parameter " + algorithmParameterName);
                         missedAlgorithmParameterCount += 1;
                     }
-
-                    //System.out.println(algorithmParameterName + "? " + unitTestContainsOCDAParameter);//TODO:DELETE
                 }
             }
         }
-
-
-
 
         /* Sub-metric value calculation */
         int compatibleGraphTypeCount = compatibleGraphTypes.size();
 
         // Each unit test should set all parameters. For each missing parameter set, the submetric value reduces
-        algorithmParameterUsageRatio = 1 - (double)missedAlgorithmParameterCount/ (compatibleGraphTypeCount * algorithmParameterNames.size());
-        // System.out.println("compatible graph types " + compatibleGraphTypeCount  + " | algorithm parameter count " + algorithmParameterNames.size()+ " | missed parameters " + missedAlgorithmParameterCount+ " | submetric value " + submetricValue);
+        algorithmParameterUsageRatio = 1 - (double)missedAlgorithmParameterCount / (compatibleGraphTypeCount * algorithmParameterNames.size());
 
         return algorithmParameterUsageRatio;
     }
@@ -277,8 +266,6 @@ public class OCDSubmetric {
         /* Check if there is a test for each compatible graph type */
         // Check for each compatible graph type
         for (String compatibleGraphType : compatibleGraphTypes) {
-            System.out.println(compatibleGraphType);
-
             String testMethodName = graphTypeToTestNameMap.get(compatibleGraphType);
             if (testMethodName != null && !ocdaTestClassMethods.contains(testMethodName)) {
                 addMissingTestToPrompt(testMethodName);
@@ -286,15 +273,11 @@ public class OCDSubmetric {
             }
         }
 
-
         // Sub-metric value calculation
-
         compatibleGraphTypeTestRatio = (1 - ((double) missingTests / totalCompatibilityCount));
 
-        //System.out.println("\n\nmissing tests=" + missingTests + "\ntotalCompatibilityCount=" + totalCompatibilityCount + "\npromptImprovementRemarks:" + promptImprovementRemarks + "\ncalculatedValue=" + compatibleGraphTypeTestRatio);//TODO:DELETE
 
         return compatibleGraphTypeTestRatio;
-
     }
 
 
